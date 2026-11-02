@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /logos/
+Disallow: /upload.php
+
+Sitemap: https://dobleamarilla.com/sitemap.xml
