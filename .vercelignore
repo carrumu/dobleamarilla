@@ -1,0 +1,4 @@
+# No se publica en Vercel (no ejecuta PHP): solo sirve en un hosting con PHP
+upload.php
+logos/
+README.md
