@@ -2,4 +2,4 @@ User-agent: *
 Disallow: /logos/
 Disallow: /upload.php
 
-Sitemap: https://dobleeamarilla.com/sitemap.xml
+Sitemap: https://www.dobleeamarilla.com/sitemap.xml
