@@ -23,11 +23,11 @@ AddType model/gltf-binary .glb
   AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/json model/gltf-binary
 </IfModule>
 
-# Fuerza HTTPS y la dirección sin www: https://dobleamarilla.com
+# Fuerza HTTPS y la dirección sin www: https://dobleeamarilla.com
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  RewriteCond %{HTTP_HOST} ^www\.dobleamarilla\.com$ [NC]
-  RewriteRule ^ https://dobleamarilla.com%{REQUEST_URI} [L,R=301]
+  RewriteCond %{HTTP_HOST} ^www.dobleeamarilla.com$ [NC]
+  RewriteRule ^ https://dobleeamarilla.com%{REQUEST_URI} [L,R=301]
   RewriteCond %{HTTPS} !=on
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </IfModule>

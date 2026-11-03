@@ -1,6 +1,6 @@
 # Doble Amarilla
 
-Web de [dobleamarilla.com](https://dobleamarilla.com): equipaciones de fútbol personalizadas para fútbol 7, pachangas y equipos amateur.
+Web de [dobleeamarilla.com](https://dobleeamarilla.com): equipaciones de fútbol personalizadas para fútbol 7, pachangas y equipos amateur.
 
 Web estática (HTML, CSS y JS sin build). Se sube tal cual al hosting.
 
