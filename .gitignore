@@ -1,3 +1,6 @@
 # Logos que suben los clientes en el servidor: no van al repositorio
 logos/*
 !logos/.htaccess
+
+# Notas de diseño internas
+.impeccable/
