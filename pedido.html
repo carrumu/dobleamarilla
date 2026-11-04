@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Tu pedido · Doble Amarilla</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --amarillo:#FFD60A; --negro:#111110; --roja:#D93025; --verde:#1F7A3A;
+  --bg:#ffffff; --fg:#111110; --mute:#6b6a65; --line:#e6e5e1; --panel:#f4f4f2;
+  --f-body:"Schibsted Grotesk",system-ui,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--panel);color:var(--fg);font:400 16px/1.55 var(--f-body);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+header{background:#fff;border-bottom:1px solid var(--line)}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+header .wrap{display:flex;align-items:center;justify-content:space-between;min-height:68px}
+header img{height:28px;width:auto}
+main{padding:32px 0 72px}
+.code{font-family:var(--f-mono);font-weight:700;font-size:13px;letter-spacing:.12em;color:var(--mute);margin:0}
+h1{margin:4px 0 22px;font-size:clamp(30px,6vw,42px);line-height:1.08;letter-spacing:-.02em;font-weight:800}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:16px}
+.card h2{margin:0 0 12px;font-size:18px}
+.steps{list-style:none;margin:0 0 16px;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.steps li{font-size:13px;font-weight:600;color:var(--mute);border-top:4px solid var(--line);padding-top:8px}
+.steps li.on{color:var(--fg);border-color:var(--negro)}
+.steps li.now{border-color:var(--amarillo);color:var(--fg)}
+.status{margin:0;font-size:17px}
+.boceto img{width:100%;border-radius:12px;border:1px solid var(--line);background:var(--panel)}
+.pdf{display:inline-block;font-weight:700}
+.rows{list-style:none;margin:0;padding:0}
+.rows li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
+.rows li span:first-child{color:var(--mute)}
+.total{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px}
+.total b{font-size:28px;font-weight:800}
+details{margin-top:14px}
+summary{cursor:pointer;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:15px;margin-top:10px}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line)}
+th{font-size:13px;color:var(--mute);font-weight:600}
+.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;border-radius:999px;border:2px solid var(--negro);font-weight:700;font-size:16px;text-decoration:none;cursor:pointer;margin-top:10px;padding:0 20px}
+.btn-k{background:var(--negro);color:#fff}
+.btn-y{background:var(--amarillo);border-color:var(--amarillo);color:var(--negro)}
+.btn-o{background:#fff;color:var(--negro)}
+.btn:disabled{opacity:.6;cursor:wait}
+.fine{font-size:13px;color:var(--mute);margin:12px 0 0}
+.msg{font-weight:700;margin:10px 0 0}
+.msg.err{color:var(--roja)}
+.ok{border-color:var(--verde)}
+.ok h2{color:var(--verde)}
+.empty{text-align:center;padding:60px 0}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a href="./"><img src="img/logo.svg" alt="Doble Amarilla"></a></div></header>
+<main class="wrap">
+  <div id="load" class="empty"><p>Cargando tu pedido...</p></div>
+  <div id="fail" class="empty" hidden><h1>No encontramos este pedido</h1><p id="fail-msg"></p><a class="btn btn-k wa" target="_blank" rel="noopener">Escribir por WhatsApp</a></div>
+
+  <div id="order" hidden>
+    <p class="code" id="o-code"></p>
+    <h1 id="o-team"></h1>
+
+    <div class="card ok" id="paid-now" hidden>
+      <h2>Pago recibido. Gracias.</h2>
+      <p class="status">Nos ponemos con tu pedido. Te escribo por WhatsApp cuando salga.</p>
+    </div>
+
+    <div class="card">
+      <ol class="steps" id="steps"><li>Boceto</li><li>Pago</li><li>Fabricación</li><li>Envío</li></ol>
+      <p class="status" id="o-status"></p>
+    </div>
+
+    <div class="card boceto" id="boceto" hidden>
+      <h2>Tu boceto</h2>
+      <div id="boceto-view"></div>
+      <div id="pay-box" hidden>
+        <button type="button" class="btn btn-y" id="pay">Aprobar y pagar</button>
+        <a class="btn btn-o wa" id="change" target="_blank" rel="noopener">Quiero cambiar algo</a>
+        <p class="msg" id="pay-msg" aria-live="polite"></p>
+        <p class="fine">El pago es con tarjeta en la página segura de Stripe. Ahí pones también la dirección de envío. Al pagar aceptas las <a href="condiciones.html">condiciones de compra</a>.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Resumen</h2>
+      <ul class="rows" id="o-rows"></ul>
+      <div class="total"><span>Total con envío</span><b id="o-total"></b></div>
+      <details>
+        <summary id="o-players"></summary>
+        <table><thead><tr><th>#</th><th>Nombre</th><th>Dorsal</th><th>Talla</th><th>Pieza</th></tr></thead><tbody id="o-roster"></tbody></table>
+      </details>
+    </div>
+    <a class="btn btn-o wa" target="_blank" rel="noopener">¿Dudas? Escríbeme por WhatsApp</a>
+  </div>
+</main>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var q = new URLSearchParams(location.search), t = q.get("t") || "";
+  var WA = "34684315503";
+  function eur(c){ return (c/100).toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})+" €"; }
+  function esc(s){ return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+  function setWa(text){ document.querySelectorAll(".wa").forEach(function(a){ a.href = "https://wa.me/"+WA+"?text="+encodeURIComponent(text); }); }
+  setWa("Hola, tengo una duda sobre mi pedido.");
+
+  var STATUS = {
+    nuevo: [0, "Estoy preparando tu boceto. Te aviso por WhatsApp cuando esté."],
+    boceto: [1, "Revisa el boceto. Si te gusta, apruébalo y paga para que empecemos a fabricar."],
+    pagado: [2, "Pagado. Tu pedido entra en fabricación."],
+    fabricacion: [2, "Fabricando tu pedido."],
+    enviado: [3, "Enviado."],
+    entregado: [4, "Entregado. Que lo disfrutéis."],
+    cancelado: [-1, "Pedido cancelado."]
+  };
+
+  function load(){
+    return fetch("api/cliente?t="+encodeURIComponent(t), {cache:"no-store"}).then(function(r){
+      return r.json().catch(function(){ return {}; }).then(function(j){ if (!r.ok) throw (j.error || "No se ha podido cargar el pedido."); return j; });
+    });
+  }
+  function render(p){
+    if (p.whatsapp) WA = p.whatsapp;
+    $("o-code").textContent = "PEDIDO "+p.codigo;
+    $("o-team").textContent = p.equipo || "Tu equipación";
+    document.title = "Pedido "+p.codigo+" · Doble Amarilla";
+    setWa("Hola, sobre mi pedido "+p.codigo+": ");
+    $("change").href = "https://wa.me/"+WA+"?text="+encodeURIComponent("Hola, del pedido "+p.codigo+" quiero cambiar esto del boceto: ");
+
+    var st = STATUS[p.estado] || [0, ""], lis = $("steps").children;
+    for (var i=0;i<lis.length;i++){ lis[i].className = i < st[0] ? "on" : (i === st[0] ? "now" : ""); }
+    var txt = st[1];
+    if (p.estado === "enviado" && p.seguimiento) txt = "Enviado. Seguimiento: "+p.seguimiento;
+    $("o-status").textContent = txt;
+
+    $("boceto").hidden = !p.boceto;
+    if (p.boceto) $("boceto-view").innerHTML = p.boceto_pdf
+      ? '<a class="pdf" href="'+esc(p.boceto)+'" target="_blank" rel="noopener">Abrir el boceto (PDF)</a>'
+      : '<a href="'+esc(p.boceto)+'" target="_blank" rel="noopener"><img src="'+esc(p.boceto)+'" alt="Boceto de la equipación"></a>';
+    $("pay-box").hidden = p.estado !== "boceto";
+    $("pay").textContent = "Aprobar y pagar "+eur(p.total_cent);
+
+    var rows = [["Equipación", p.diseno]];
+    if (p.patrocinador) rows.push(["Patrocinador", p.patrocinador]);
+    p.lineas.forEach(function(l){ rows.push([l.cantidad+" × "+l.concepto.toLowerCase(), eur(l.cantidad*l.unidad_cent)]); });
+    $("o-rows").innerHTML = rows.map(function(r){ return "<li><span>"+esc(r[0])+"</span><span>"+esc(r[1])+"</span></li>"; }).join("");
+    $("o-total").textContent = eur(p.total_cent);
+    $("o-players").textContent = "Plantilla ("+p.plantilla.length+")";
+    $("o-roster").innerHTML = p.plantilla.map(function(j,i){
+      return "<tr><td>"+(i+1)+"</td><td>"+esc(j.nombre||"-")+"</td><td>"+esc(j.dorsal||"-")+"</td><td>"+esc(j.talla)+"</td><td>"+(j.pieza==="kit"?"Completa":"Camiseta")+"</td></tr>";
+    }).join("");
+    $("load").hidden = true; $("order").hidden = false;
+  }
+
+  // Vuelta de Stripe: el aviso del pago puede tardar unos segundos en llegar
+  var tries = 0;
+  function start(){
+    load().then(function(p){
+      if (q.get("pagado") && !p.pagado && tries++ < 6){ setTimeout(start, 2000); if (tries === 1) render(p); return; }
+      render(p);
+      $("paid-now").hidden = !(q.get("pagado") && p.pagado);
+    }, function(err){
+      $("load").hidden = true; $("fail").hidden = false; $("fail-msg").textContent = err;
+    });
+  }
+  if (!t){ $("load").hidden = true; $("fail").hidden = false; $("fail-msg").textContent = "Abre el enlace que te mandamos por WhatsApp."; }
+  else start();
+
+  $("pay").addEventListener("click", function(){
+    var b = this; b.disabled = true; $("pay-msg").className = "msg"; $("pay-msg").textContent = "Abriendo el pago...";
+    fetch("api/cliente", {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({t:t, accion:"pagar"})})
+      .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ if (!r.ok || !j.url) throw (j.error || "No se ha podido abrir el pago."); location.href = j.url; }); })
+      .catch(function(err){ b.disabled = false; $("pay-msg").className = "msg err"; $("pay-msg").textContent = typeof err === "string" ? err : "Sin conexión. Inténtalo otra vez."; });
+  });
+})();
+</script>
+</body>
+</html>

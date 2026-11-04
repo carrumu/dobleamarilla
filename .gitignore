@@ -4,3 +4,6 @@ logos/*
 
 # Notas de diseño internas
 .impeccable/
+
+# Dependencias de las funciones (Vercel las instala al publicar)
+node_modules/

@@ -263,7 +263,7 @@ footer .logo img{height:34px}
 .chip[aria-pressed="true"]{border-color:var(--negro);background:var(--negro);color:#fff}
 .field{display:grid;gap:6px}
 .field label{font-size:14px;font-weight:600}
-input[type=text],input[type=number],select,textarea{width:100%;min-width:0;min-height:46px;border-radius:10px;border:1.5px solid var(--line);background:#fff;padding:0 14px;font-size:16px}
+input[type=text],input[type=number],input[type=tel],input[type=email],select,textarea{width:100%;min-width:0;min-height:46px;border-radius:10px;border:1.5px solid var(--line);background:#fff;padding:0 14px;font-size:16px}
 textarea{padding:12px 14px;resize:vertical}
 input:focus,select:focus,textarea:focus{border-color:var(--fg);outline:none}
 .hint{font-size:14px;color:var(--mute);margin:10px 0 0}
@@ -321,6 +321,18 @@ input:focus,select:focus,textarea:focus{border-color:var(--fg);outline:none}
 .summary .fine{font-size:13px;margin:14px 0 0;color:var(--mute)}
 .sent{display:none;margin-top:12px;font-weight:700}
 .sent.on{display:block}
+.cdata{display:grid;gap:12px}
+@media(min-width:640px){.cdata{grid-template-columns:1fr 1fr}.cdata .field:first-child{grid-column:1/-1}}
+.cdata input{width:100%}
+.roster-actions+.box{margin-top:20px}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.field input.bad{border-color:var(--roja)}
+.done{margin-top:4px}
+.done .kick{margin:0}
+.done-code{margin:2px 0 10px;font-family:var(--f-mono);font-weight:700;font-size:28px;letter-spacing:.04em}
+.done p{margin:0 0 6px}
+.done .del{display:block;margin:12px auto 0}
+.summary.is-done #send,.summary.is-done #copy,.summary.is-done #sum-nudge{display:none}
 
 /* Precios */
 .prices{display:grid;gap:14px}
@@ -581,6 +593,25 @@ footer ul a:hover{color:#fff;text-decoration:underline}
             <button type="button" class="btn btn-k" id="add1">Añadir jugador</button>
             <button type="button" class="btn btn-o" id="add7">Añadir 7</button>
           </div>
+        <div class="box">
+          <h3 class="box-t"><span>3</span>Tus datos</h3>
+          <div class="cdata">
+            <div class="field">
+              <label for="c-name">Nombre</label>
+              <input type="text" id="c-name" maxlength="80" autocomplete="name">
+            </div>
+            <div class="field">
+              <label for="c-tel">WhatsApp</label>
+              <input type="tel" id="c-tel" maxlength="24" autocomplete="tel" placeholder="600 000 000">
+            </div>
+            <div class="field">
+              <label for="c-mail">Email</label>
+              <input type="email" id="c-mail" maxlength="120" autocomplete="email">
+            </div>
+            <input type="text" id="c-web" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp">
+          </div>
+          <p class="hint">Te mando el boceto por WhatsApp. La dirección de envío la pones al pagar.</p>
+        </div>
         </div>
 
         <aside class="summary" aria-live="polite">
@@ -594,7 +625,15 @@ footer ul a:hover{color:#fff;text-decoration:underline}
           <button type="button" class="btn btn-k" id="send">Enviar pedido</button>
           <button type="button" class="btn btn-o" id="copy">Copiar pedido</button>
           <p class="sent" id="sent"></p>
-          <p class="fine">No pagas nada ahora. Te escribimos para confirmar diseño, tallas y plazo antes de fabricar. Precios con envío incluido. Al enviarlo aceptas las <a href="condiciones.html">condiciones de compra</a> y la <a href="privacidad.html">política de privacidad</a>.</p>
+          <div class="done" id="done" hidden>
+            <p class="kick">Pedido recibido</p>
+            <p class="done-code" id="done-code"></p>
+            <p>Te mando el boceto por WhatsApp. Cuando te guste, lo pagas con tarjeta desde el enlace de tu pedido y nos ponemos a fabricar.</p>
+            <a class="btn btn-k" id="done-wa" target="_blank" rel="noopener">Avisar por WhatsApp</a>
+            <a class="btn btn-o" id="done-link">Ver mi pedido</a>
+            <button type="button" class="del" id="done-new">Hacer otro pedido</button>
+          </div>
+          <p class="fine">No pagas nada ahora: primero te mando el boceto y pagas cuando lo apruebes. Precios con envío incluido. Al enviarlo aceptas las <a href="condiciones.html">condiciones de compra</a> y la <a href="privacidad.html">política de privacidad</a>.</p>
         </aside>
       </div>
     </div>
@@ -1202,19 +1241,27 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       img.src = url;
     });
   }
-  function sendFile(blob, key, name, onProg){
-    return new Promise(function(res, rej){
-      var fd = new FormData();
-      var ext = {"image/png":".png","image/jpeg":".jpg","image/webp":".webp","application/pdf":".pdf"}[blob.type] || "";
-      fd.append("file", blob, name.replace(/\.[^.]+$/, "") + ext);
-      fd.append("kind", key === "crest" ? "escudo" : "patrocinador");
-      var x = new XMLHttpRequest();
-      x.open("POST", B.uploadEndpoint);
-      x.upload.onprogress = function(e){ if (e.lengthComputable) onProg(e.loaded/e.total); };
-      x.onload = function(){ var j = null; try { j = JSON.parse(x.responseText); } catch(e) {}
-        if (x.status === 200 && j && j.url) res(j.url); else rej((j && j.error) || "No se ha podido subir. Mándalo luego por WhatsApp."); };
-      x.onerror = function(){ rej("Sin conexión. Mándalo luego por WhatsApp."); };
-      x.send(fd);
+  // Llamadas al servidor. Sin servidor (vista local o tienda sin activar) la web sigue funcionando por WhatsApp
+  function api(path, body){
+    return fetch("api/"+path, {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify(body)})
+      .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return {ok:r.ok, status:r.status, j:j}; }); },
+        function(){ return {ok:false, status:0, j:{}}; });
+  }
+  function offline(r){ return [0,404,405,501,503].indexOf(r.status) >= 0; }
+  // El logo va directo al almacenamiento con una URL firmada. Devuelve su ruta, o "" si no hay servidor
+  function sendFile(blob, onProg){
+    return api("subida", {mime:blob.type}).then(function(r){
+      if (offline(r)) return "";
+      if (!r.ok) throw (r.j.error || "No se ha podido subir. Mándalo luego por WhatsApp.");
+      return new Promise(function(res, rej){
+        var fd = new FormData(); fd.append("cacheControl", "3600"); fd.append("", blob);
+        var x = new XMLHttpRequest();
+        x.open("PUT", r.j.url);
+        x.upload.onprogress = function(e){ if (e.lengthComputable) onProg(e.loaded/e.total); };
+        x.onload = function(){ if (x.status >= 200 && x.status < 300) res(r.j.ruta); else rej("No se ha podido subir. Mándalo luego por WhatsApp."); };
+        x.onerror = function(){ rej("Sin conexión. Mándalo luego por WhatsApp."); };
+        x.send(fd);
+      });
     });
   }
   function renderUp(key){
@@ -1234,12 +1281,11 @@ footer ul a:hover{color:#fff;text-decoration:underline}
     msg.className = "up-msg"; msg.textContent = "Preparando...";
     el.classList.add("busy");
     prepareFile(file).then(function(p){
-      if (!B.uploadEndpoint) return {url:"", p:p};
       msg.textContent = "Subiendo...";
-      return sendFile(p.blob, key, file.name, function(r){ msg.textContent = "Subiendo "+Math.round(r*100)+" %"; }).then(function(url){ return {url:url, p:p}; });
+      return sendFile(p.blob, function(r){ msg.textContent = "Subiendo "+Math.round(r*100)+" %"; }).then(function(ruta){ return {ruta:ruta, p:p}; });
     }).then(function(r){
-      state[UPKEY[key]] = {url:r.url, name:file.name, thumb:r.p.thumb};
-      msg.textContent = r.url ? "Subido. Va enlazado en el pedido." : "Guardado para la vista previa. Mándanoslo luego por WhatsApp.";
+      state[UPKEY[key]] = {ruta:r.ruta, name:file.name, thumb:r.p.thumb};
+      msg.textContent = r.ruta ? "Subido. Va con el pedido." : "Guardado para la vista previa. Mándanoslo luego por WhatsApp.";
       renderUp(key); renderStage(); save();
     }, function(err){
       msg.className = "up-msg err"; msg.textContent = typeof err === "string" ? err : "No se ha podido subir. Mándalo luego por WhatsApp.";
@@ -1366,10 +1412,8 @@ footer ul a:hover{color:#fff;text-decoration:underline}
     if (t.shirts) L.push(t.shirts+" camisetas solas × "+eur(t.sUnit));
     L.push("Total estimado: "+eur(t.total)+" (envío incluido)");
     L.push("");
-    var need = [];
-    if (state.crest && state.crest.url) L.push("Escudo: "+state.crest.url); else need.push("el escudo");
-    if (state.sponsorLogo && state.sponsorLogo.url) L.push("Logo del patrocinador: "+state.sponsorLogo.url);
-    else if (state.sponsor.trim() || state.sponsorLogo) need.push("el logo del patrocinador");
+    var need = ["el escudo"];
+    if (state.sponsor.trim() || state.sponsorLogo) need.push("el logo del patrocinador");
     if (need.length) L.push("Os mando "+need.join(" y ")+" por aquí.");
     return L.join("\n");
   }
@@ -1379,16 +1423,61 @@ footer ul a:hover{color:#fff;text-decoration:underline}
   }
   function flash(s){ var el=$("sent"); el.textContent=s; el.classList.add("on"); }
   $("copy").addEventListener("click", function(){ copyText(message()).then(function(){ flash(B.whatsapp ? "Pedido copiado. Pégalo en un WhatsApp al +"+B.whatsapp+"." : "Pedido copiado. Pégalo en un mensaje a @"+B.instagram+"."); }, function(){ flash("No se ha podido copiar. Haz una captura del resumen."); }); });
+  // Datos de contacto
+  if (!state.cliente) state.cliente = {nombre:"", telefono:"", email:""};
+  [["c-name","nombre"],["c-tel","telefono"],["c-mail","email"]].forEach(function(f){
+    var el = $(f[0]); el.value = state.cliente[f[1]] || "";
+    el.addEventListener("input", function(){ state.cliente[f[1]] = this.value; this.classList.remove("bad"); save(); });
+  });
+  function checkContact(){
+    var c = state.cliente, bad = null;
+    if (!c.nombre.trim()) bad = ["c-name","Pon tu nombre."];
+    else if (c.telefono.replace(/\D/g,"").length < 9) bad = ["c-tel","Pon un teléfono con WhatsApp para mandarte el boceto."];
+    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c.email.trim())) bad = ["c-mail","Revisa el email."];
+    if (bad){ $(bad[0]).classList.add("bad"); $(bad[0]).focus(); flash(bad[1]); }
+    return !bad;
+  }
+  function payload(){
+    var d = state.model ? {tipo:"catalogo", modelo:state.model.id, color:state.model.color}
+      : {tipo:"medida", patron:state.pattern, c1:state.c1, c2:state.c2, c3:state.c3, tinta:inkFor(state), contorno:state.outline, idea:state.idea};
+    return {
+      cliente:state.cliente, equipo:state.team, patrocinador:state.sponsor, diseno:d, web:$("c-web").value,
+      escudo:state.crest && state.crest.ruta || null, logo_patrocinador:state.sponsorLogo && state.sponsorLogo.ruta || null,
+      plantilla:state.roster.map(function(r){ return {nombre:r.name, dorsal:r.num, talla:r.size, pieza:r.piece}; })
+    };
+  }
+  function showDone(o){
+    $("sent").classList.remove("on");
+    $("done-code").textContent = o.codigo || "";
+    $("done-code").hidden = !o.codigo;
+    $("done-wa").href = o.wa; $("done-wa").textContent = o.codigo ? "Avisar por WhatsApp" : "Enviar pedido por WhatsApp";
+    $("done-link").hidden = !o.enlace; if (o.enlace) $("done-link").href = o.enlace;
+    $("done").hidden = false; document.querySelector(".summary").classList.add("is-done");
+  }
+  function waTo(text){ return "https://wa.me/"+B.whatsapp+"?text="+encodeURIComponent(text); }
   $("send").addEventListener("click", function(){
     if (!chosenKind()){ flash("Elige primero un modelo del catálogo o tu diseño a medida."); $("camisetas").scrollIntoView({behavior:"smooth"}); return; }
-    var msg = message();
-    if (B.whatsapp){ window.open("https://wa.me/"+B.whatsapp+"?text="+encodeURIComponent(msg), "_blank", "noopener"); flash("Se abre WhatsApp con el pedido escrito. Solo falta darle a enviar."); }
-    else { copyText(msg).then(function(){}, function(){}); window.open("https://ig.me/m/"+B.instagram, "_blank", "noopener"); flash("Pedido copiado. Se abre Instagram: pégalo en el chat con @"+B.instagram+" y envíalo."); }
+    if (!checkContact()) return;
+    var btn = this; btn.disabled = true; btn.textContent = "Enviando...";
+    api("pedidos", payload()).then(function(r){
+      if (r.ok){
+        state.lastOrder = {codigo:r.j.codigo, enlace:r.j.enlace}; save();
+        showDone({codigo:r.j.codigo, enlace:r.j.enlace, wa:waTo("Hola, acabo de hacer el pedido "+r.j.codigo+(state.team.trim()?" ("+state.team.trim()+")":"")+".")});
+      } else if (offline(r)){
+        // Tienda online sin activar: el pedido va entero por WhatsApp, como antes
+        showDone({wa:waTo(message())});
+      } else flash(r.j.error || "No se ha podido enviar. Inténtalo otra vez.");
+    }).then(function(){ btn.disabled = false; btn.textContent = "Enviar pedido"; });
   });
+  $("done-new").addEventListener("click", function(){
+    state.lastOrder = null; state.crest = null; state.sponsorLogo = null; state.roster = []; for (var i=0;i<7;i++) state.roster.push(blankRow());
+    save(); $("done").hidden = true; document.querySelector(".summary").classList.remove("is-done");
+    renderRoster(); Object.keys(UPKEY).forEach(renderUp); renderStage(); renderSummary();
+  });
+  if (state.lastOrder) showDone({codigo:state.lastOrder.codigo, enlace:state.lastOrder.enlace, wa:waTo("Hola, acabo de hacer el pedido "+state.lastOrder.codigo+".")});
 
   // Precios y enlaces
   document.querySelectorAll("[data-price]").forEach(function(el){ el.textContent = num(P[el.dataset.price]); });
-  $("send").textContent = B.whatsapp ? "Enviar pedido por WhatsApp" : "Enviar pedido por Instagram";
   if (B.instagram) $("f-ig").href = "https://www.instagram.com/"+B.instagram+"/";
   if (B.tiktok) $("f-tt").href = "https://www.tiktok.com/@"+B.tiktok;
 

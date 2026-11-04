@@ -1,0 +1,11 @@
+{
+  "name": "dobleamarilla-web",
+  "private": true,
+  "type": "module",
+  "description": "Web estática + funciones de Vercel (api/) para pedidos, logos y pagos con Stripe",
+  "engines": { "node": "22.x" },
+  "dependencies": {
+    "@supabase/supabase-js": "2.118.0",
+    "stripe": "23.1.0"
+  }
+}

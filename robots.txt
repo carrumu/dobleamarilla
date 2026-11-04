@@ -1,5 +1,8 @@
 User-agent: *
 Disallow: /logos/
 Disallow: /upload.php
+Disallow: /panel.html
+Disallow: /pedido.html
+Disallow: /api/
 
 Sitemap: https://www.dobleeamarilla.com/sitemap.xml
