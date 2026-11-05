@@ -10,6 +10,6 @@ export async function POST(req) {
   if (!ext) return error("Formato no admitido. Usa PNG, JPG, WebP o PDF.");
   const ruta = "tmp/" + token().slice(0, 24) + "." + ext;
   const { data, error: e } = await db().storage.from("logos").createSignedUploadUrl(ruta);
-  if (e) { console.error(e); return json({ error: "No se ha podido preparar la subida.", detalle: String(e.message || e).slice(0, 200) }, 500); }
+  if (e) { console.error(e); return error("No se ha podido preparar la subida.", 500); }
   return json({ ruta, url: data.signedUrl });
 }
