@@ -8,7 +8,7 @@ import { createClient } from "@supabase/supabase-js";
 import Stripe from "stripe";
 
 // Nombres de variable sin distinguir mayúsculas: en Vercel se dieron de alta en minúsculas
-export const ENV = Object.fromEntries(Object.entries(process.env).map(([k, v]) => [k.toUpperCase(), (v || "").trim()]));
+export const ENV = Object.fromEntries(Object.entries(process.env).map(([k, v]) => [k.trim().toUpperCase(), (v || "").trim()]));
 export const SITE = (ENV.SITE_URL || "https://www.dobleeamarilla.com").replace(/\/$/, "");
 
 // Precios, tallas y catálogo salen de los mismos archivos que usa la web: un solo sitio donde cambiarlos
