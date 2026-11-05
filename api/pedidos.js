@@ -1,5 +1,5 @@
 // POST /api/pedidos: guarda el pedido que manda la web. Aún no se cobra: primero va el boceto.
-import { BRAND, CATALOGO, configurado, db, json, error, sinConfigurar, leerJson, token, lineas, RUTA_SUBIDA, SITE } from "./_lib/comun.js";
+import { BRAND, CATALOGO, configurado, db, json, error, sinConfigurar, leerJson, token, lineas, RUTA_SUBIDA, SITE, MINIMO_MEDIDA } from "./_lib/comun.js";
 
 const PATRONES = ["lisa", "banda", "aros", "rayas", "mitades", "faja", "corte", "laterales", "tarjetas"];
 const HEX = /^#[0-9A-Fa-f]{6}$/;
@@ -47,6 +47,7 @@ export async function POST(req) {
     if (cliente.telefono.replace(/\D/g, "").length < 9) throw new Error("Pon un teléfono con WhatsApp para mandarte el boceto.");
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(cliente.email)) throw new Error("El email no parece correcto.");
     const d = diseno(b.diseno), pl = plantilla(b.plantilla);
+    if (d.tipo === "medida" && pl.length < MINIMO_MEDIDA) throw new Error("El diseño a medida es a partir de " + MINIMO_MEDIDA + " camisetas.");
     const ruta = (v) => (v && RUTA_SUBIDA.test(v) ? v : null);
     const fila = {
       token: token(), cliente, equipo: txt(b.equipo, 28), diseno: d, patrocinador: txt(b.patrocinador, 40),

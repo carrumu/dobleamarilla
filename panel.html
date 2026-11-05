@@ -79,6 +79,10 @@ th{font-size:12px;color:var(--mute)}
 .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .note{color:var(--mute);font-size:13px;margin:6px 0 0}
 .ok{color:var(--verde);font-weight:700}
+.price-box{background:#fffbe0;border:1px solid #f0e2a0;border-radius:12px;padding:12px 14px;margin-top:12px}
+.pr-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.pr-row label{margin:0;flex:1;min-width:140px}
+.pr-row input{margin-top:4px}
 </style>
 </head>
 <body>
@@ -145,7 +149,7 @@ th{font-size:12px;color:var(--mute)}
       $("list").innerHTML = j.pedidos.length ? j.pedidos.map(function(p){
         return '<button class="item'+(actual===p.codigo?" on":"")+'" data-c="'+p.codigo+'">'
           + '<span class="mono">'+p.codigo+'</span><span class="who">'+esc(p.equipo||"(sin nombre)")+' · '+esc(p.cliente.nombre)+'</span><span class="tag t-'+p.estado+'">'+esc(NOMBRE[p.estado]||p.estado)+'</span>'
-          + '<span class="sub">'+fecha(p.creado)+' · '+esc(p.diseno)+' · '+p.jugadores+' jugadores · '+eur(p.total_cent)+'</span></button>';
+          + '<span class="sub">'+fecha(p.creado)+' · '+esc(p.diseno)+' · '+p.jugadores+' jugadores · '+(p.total_cent ? eur(p.total_cent) : 'precio a convenir')+'</span></button>';
       }).join("") : '<p class="none">No hay pedidos aquí.</p>';
     }, function(err){ $("list").innerHTML = '<p class="none">'+esc(err)+'</p>'; });
   }
@@ -182,13 +186,19 @@ th{font-size:12px;color:var(--mute)}
       + '<h3>Plantilla ('+p.plantilla.length+')</h3><table><thead><tr><th>#</th><th>Nombre</th><th>Dorsal</th><th>Talla</th><th>Pieza</th></tr></thead><tbody>'
       + p.plantilla.map(function(j,i){ return '<tr><td>'+(i+1)+'</td><td>'+esc(j.nombre||"-")+'</td><td>'+esc(j.dorsal||"-")+'</td><td>'+esc(j.talla)+'</td><td>'+(j.pieza==="kit"?"Completa":"Camiseta")+'</td></tr>'; }).join("")
       + '</tbody></table>'
-      + '<h3>Importe</h3><dl class="kv">'+p.lineas.map(function(l){ return '<dt>'+l.cantidad+' × '+esc(l.concepto)+'</dt><dd>'+eur(l.cantidad*l.unidad_cent)+'</dd>'; }).join("")+'<dt>Total</dt><dd><b>'+eur(p.total_cent)+'</b>'+(p.pagado?' <span class="ok">pagado '+fecha(p.pagado)+'</span>':'')+'</dd></dl>'
+      + '<h3>Importe</h3><dl class="kv">'+p.lineas.map(function(l){ return '<dt>'+l.cantidad+' × '+esc(l.concepto)+'</dt><dd>'+(l.unidad_cent == null ? 'a convenir' : eur(l.unidad_cent)+' / ud · '+eur(l.cantidad*l.unidad_cent))+'</dd>'; }).join("")+'<dt>Total</dt><dd><b>'+(p.total_cent ? eur(p.total_cent) : 'a convenir')+'</b>'+(p.pagado?' <span class="ok">pagado '+fecha(p.pagado)+'</span>':'')+'</dd></dl>'
+      + (d.tipo === "medida" && !p.pagado ? precioBox(p) : '')
       + (p.envio ? '<h3>Envío</h3><dl class="kv"><dt>Nombre</dt><dd>'+esc(env.nombre)+'</dd><dt>Teléfono</dt><dd>'+esc(env.telefono)+'</dd><dt>Dirección</dt><dd>'+esc([a.line1,a.line2].filter(Boolean).join(", "))+'<br>'+esc([a.postal_code,a.city,a.state].filter(Boolean).join(" "))+'</dd></dl>' : '')
       + '<h3>Gestión</h3><label for="g-estado">Estado</label><select id="g-estado">'+opts+'</select>'
       + '<label for="g-seg">Seguimiento del envío</label><input type="text" id="g-seg" value="'+esc(p.seguimiento)+'" placeholder="Número o enlace de seguimiento">'
       + '<label for="g-notas">Notas internas</label><textarea id="g-notas">'+esc(p.notas)+'</textarea>'
       + '<div class="actions"><button class="btn btn-k" id="g-save">Guardar</button><button class="btn" id="csv-one">CSV para MateFulfill</button></div><p class="note" id="g-msg" aria-live="polite"></p>';
 
+    if ($("pr-save")) $("pr-save").addEventListener("click", function(){
+      var b = this; b.disabled = true;
+      api({accion:"precio", codigo:p.codigo, kit:($("pr-kit")||{}).value, camiseta:($("pr-cam")||{}).value})
+        .then(function(){ ver(p.codigo); lista(); }, function(err){ $("pr-msg").textContent = err; b.disabled = false; });
+    });
     $("copy-link").addEventListener("click", function(){ navigator.clipboard.writeText(p.enlace_cliente).then(function(){ $("g-msg").textContent = "Enlace copiado."; }); });
     $("g-save").addEventListener("click", function(){
       var b = this; b.disabled = true;
@@ -207,6 +217,17 @@ th{font-size:12px;color:var(--mute)}
         return fetch(j.url, {method:"PUT", body:fd}).then(function(r){ if (!r.ok) throw "No se ha podido subir."; return api({accion:"confirmarBoceto", codigo:p.codigo, ruta:j.ruta}); });
       }).then(function(){ ver(p.codigo); lista(); }, function(err){ msg.textContent = typeof err === "string" ? err : "No se ha podido subir."; });
     });
+  }
+
+  // Pedido a medida: precio por unidad que se cierra con el cliente por WhatsApp. Hasta entonces no puede pagar
+  function precioBox(p){
+    var u = function(con){ var l = p.lineas.filter(function(x){ return x.concepto === con; })[0]; return l ? l : null; };
+    var k = u("Equipación completa"), c = u("Camiseta sola");
+    var val = function(l){ return l && l.unidad_cent != null ? (l.unidad_cent/100).toFixed(2).replace(".", ",") : ""; };
+    return '<div class="price-box"><p class="note">Diseño a medida: pon el precio que cierres por WhatsApp. Hasta entonces el cliente no puede pagar.</p><div class="pr-row">'
+      + (k ? '<label>Equipación (€/ud)<input type="text" id="pr-kit" inputmode="decimal" value="'+val(k)+'" placeholder="39,99"></label>' : '')
+      + (c ? '<label>Camiseta sola (€/ud)<input type="text" id="pr-cam" inputmode="decimal" value="'+val(c)+'" placeholder="27,99"></label>' : '')
+      + '<button class="btn btn-k" id="pr-save">Guardar precio</button></div><p class="note" id="pr-msg"></p></div>';
   }
 
   function csv(body, nombre){

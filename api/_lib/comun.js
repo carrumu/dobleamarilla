@@ -63,12 +63,17 @@ export function precio(pieza, tipo) {
   return P[(pieza === "kit" ? "kit" : "shirt") + (tipo === "medida" ? "Custom" : "Std")];
 }
 export const cent = (eur) => Math.round(eur * 100);
-export function lineas(plantilla, tipo) {
+// Diseño a medida: mínimo de camisetas y precio que se cierra por WhatsApp (lo pone Carlos en el panel)
+export const MINIMO_MEDIDA = 10;
+// Precio por unidad en céntimos; sin precios (a medida recién pedido) las líneas van sin importe y el total a 0
+export function lineas(plantilla, tipo, precios) {
   const kits = plantilla.filter((r) => r.pieza === "kit").length, camis = plantilla.length - kits;
+  const pk = precios ? precios.kit : tipo === "medida" ? null : cent(precio("kit", tipo));
+  const ps = precios ? precios.camiseta : tipo === "medida" ? null : cent(precio("shirt", tipo));
   const L = [];
-  if (kits) L.push({ concepto: "Equipación completa", cantidad: kits, unidad_cent: cent(precio("kit", tipo)) });
-  if (camis) L.push({ concepto: "Camiseta sola", cantidad: camis, unidad_cent: cent(precio("shirt", tipo)) });
-  return { lineas: L, total_cent: L.reduce((s, l) => s + l.cantidad * l.unidad_cent, 0) };
+  if (kits) L.push({ concepto: "Equipación completa", cantidad: kits, unidad_cent: pk });
+  if (camis) L.push({ concepto: "Camiseta sola", cantidad: camis, unidad_cent: ps });
+  return { lineas: L, total_cent: L.some((l) => l.unidad_cent == null) ? 0 : L.reduce((s, l) => s + l.cantidad * l.unidad_cent, 0) };
 }
 
 export function codigoDiseno(d) {
@@ -81,7 +86,7 @@ export function codigoDiseno(d) {
 export async function vistaCliente(p) {
   return {
     codigo: p.codigo, estado: p.estado, creado: p.creado, equipo: p.equipo, diseno: codigoDiseno(p.diseno),
-    tipo: p.diseno.tipo, patrocinador: p.patrocinador, plantilla: p.plantilla, lineas: p.lineas, total_cent: p.total_cent,
+    tipo: p.diseno.tipo, precio_pendiente: !p.total_cent, patrocinador: p.patrocinador, plantilla: p.plantilla, lineas: p.lineas, total_cent: p.total_cent,
     boceto: await urlFirmada("bocetos", p.boceto), boceto_pdf: !!(p.boceto && p.boceto.endsWith(".pdf")),
     pagado: p.pagado, seguimiento: p.seguimiento, whatsapp: BRAND.whatsapp
   };

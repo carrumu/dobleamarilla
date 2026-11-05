@@ -1,6 +1,6 @@
 // POST /api/admin {accion, ...}: todo lo del panel (panel.html). Menos la entrada, pide la sesión firmada.
 import { configurado, db, json, error, sinConfigurar, leerJson, crearSesion, sesionValida, claveCorrecta,
-  urlFirmada, codigoDiseno, refsProveedor, token, MIMES, SITE } from "./_lib/comun.js";
+  urlFirmada, codigoDiseno, refsProveedor, token, MIMES, SITE, lineas } from "./_lib/comun.js";
 
 const ESTADOS = ["nuevo", "boceto", "pagado", "fabricacion", "enviado", "entregado", "cancelado"];
 const ahora = () => new Date().toISOString();
@@ -37,6 +37,20 @@ const acciones = {
     if (b.seguimiento !== undefined) cambios.seguimiento = String(b.seguimiento).slice(0, 300);
     if (b.notas !== undefined) cambios.notas = String(b.notas).slice(0, 4000);
     const { error: e } = await db().from("pedidos").update(cambios).eq("codigo", b.codigo);
+    if (e) throw e;
+    return json({ ok: true });
+  },
+
+  // Precio cerrado por WhatsApp para un pedido a medida: euros por equipación y por camiseta sola
+  async precio(b) {
+    const eur = (v) => { const n = Math.round(parseFloat(String(v).replace(",", ".")) * 100); return n > 0 && n < 100000 ? n : null; };
+    const kit = eur(b.kit), camiseta = eur(b.camiseta);
+    const { data: p, error: e1 } = await db().from("pedidos").select("plantilla, diseno, estado, pagado").eq("codigo", b.codigo).single();
+    if (e1) throw e1;
+    if (p.pagado) return error("Este pedido ya está pagado.");
+    const pl = p.plantilla, faltaKit = pl.some((r) => r.pieza === "kit") && !kit, faltaCam = pl.some((r) => r.pieza !== "kit") && !camiseta;
+    if (faltaKit || faltaCam) return error("Pon el precio de " + (faltaKit ? "la equipación" : "la camiseta sola") + ".");
+    const { error: e } = await db().from("pedidos").update({ ...lineas(pl, p.diseno.tipo, { kit, camiseta }), actualizado: ahora() }).eq("codigo", b.codigo);
     if (e) throw e;
     return json({ ok: true });
   },

@@ -24,6 +24,7 @@ export async function POST(req) {
   const p = await buscar(b.t);
   if (!p) return error("No encontramos este pedido.", 404);
   if (p.estado !== "boceto") return error(p.pagado ? "Este pedido ya está pagado." : "Aún no te hemos mandado el boceto.", 409);
+  if (!p.total_cent) return error("Aún estamos cerrando el precio contigo por WhatsApp.", 409);
 
   const nombre = codigoDiseno(p.diseno);
   const volver = SITE + "/pedido.html?t=" + p.token;

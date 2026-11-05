@@ -147,14 +147,15 @@ th{font-size:13px;color:var(--mute);font-weight:600}
     if (p.boceto) $("boceto-view").innerHTML = p.boceto_pdf
       ? '<a class="pdf" href="'+esc(p.boceto)+'" target="_blank" rel="noopener">Abrir el boceto (PDF)</a>'
       : '<a href="'+esc(p.boceto)+'" target="_blank" rel="noopener"><img src="'+esc(p.boceto)+'" alt="Boceto de la equipación"></a>';
-    $("pay-box").hidden = p.estado !== "boceto";
+    $("pay-box").hidden = p.estado !== "boceto" || p.precio_pendiente;
+    if (p.estado === "boceto" && p.precio_pendiente) $("o-status").textContent = "Revisa el boceto. Cerramos el precio por WhatsApp y aquí te aparecerá el botón para pagar.";
     $("pay").textContent = "Aprobar y pagar "+eur(p.total_cent);
 
     var rows = [["Equipación", p.diseno]];
     if (p.patrocinador) rows.push(["Patrocinador", p.patrocinador]);
-    p.lineas.forEach(function(l){ rows.push([l.cantidad+" × "+l.concepto.toLowerCase(), eur(l.cantidad*l.unidad_cent)]); });
+    p.lineas.forEach(function(l){ rows.push([l.cantidad+" × "+l.concepto.toLowerCase(), l.unidad_cent == null ? "a convenir" : eur(l.cantidad*l.unidad_cent)]); });
     $("o-rows").innerHTML = rows.map(function(r){ return "<li><span>"+esc(r[0])+"</span><span>"+esc(r[1])+"</span></li>"; }).join("");
-    $("o-total").textContent = eur(p.total_cent);
+    $("o-total").textContent = p.precio_pendiente ? "A convenir" : eur(p.total_cent);
     $("o-players").textContent = "Plantilla ("+p.plantilla.length+")";
     $("o-roster").innerHTML = p.plantilla.map(function(j,i){
       return "<tr><td>"+(i+1)+"</td><td>"+esc(j.nombre||"-")+"</td><td>"+esc(j.dorsal||"-")+"</td><td>"+esc(j.talla)+"</td><td>"+(j.pieza==="kit"?"Completa":"Camiseta")+"</td></tr>";

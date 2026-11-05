@@ -342,6 +342,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--fg);outline:none}
 .price h3{margin:0 0 4px;font-size:20px;font-weight:700}
 .price > p{margin:0 0 18px;color:var(--mute);font-size:15px}
 .price ul{list-style:none;margin:0;padding:0}
+.price-note{margin:14px 0 0;font-size:14px;color:var(--mute)}
+.price-note a{color:var(--fg);font-weight:700}
 .price li{display:flex;justify-content:space-between;align-items:baseline;padding:12px 0;border-top:1px solid var(--line)}
 .price li b{font-size:24px;font-weight:800;letter-spacing:-.02em}
 .price .tag{display:inline-block;background:var(--amarillo);font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;margin-bottom:12px}
@@ -483,7 +485,7 @@ footer ul a:hover{color:#fff;text-decoration:underline}
         <div>
           <span class="eyebrow">Diseño a medida</span>
           <h2>¿Ninguno os convence? Diseñadla desde cero</h2>
-          <p>Elige una base, cambia los colores y gírala para verla por todos lados. Con eso os preparamos un diseño solo para vuestro equipo y os lo enseñamos antes de fabricar.</p>
+          <p>Elige una base, cambia los colores y gírala para verla por todos lados. Con eso os preparamos un diseño solo para vuestro equipo y os lo enseñamos antes de fabricar. A partir de 10 camisetas.</p>
         </div>
       </div>
 
@@ -541,7 +543,7 @@ footer ul a:hover{color:#fff;text-decoration:underline}
 
           <div class="panel-foot">
             <button type="button" class="btn btn-k" id="use-custom">Usar este diseño a medida</button>
-            <p class="hint">A medida: equipación <b><span data-price="kitCustom"></span> €</b> · camiseta <b><span data-price="shirtCustom"></span> €</b></p>
+            <p class="hint">A medida: a partir de 10 camisetas. El precio depende del diseño y lo cerramos contigo por WhatsApp.</p>
           </div>
         </div>
       </div>
@@ -660,9 +662,10 @@ footer ul a:hover{color:#fff;text-decoration:underline}
           <h3>A medida</h3>
           <p>Os diseñamos la equipación desde cero y os la enseñamos antes de fabricar.</p>
           <ul>
-            <li><span>Equipación completa (camiseta y pantalón)</span><b><span data-price="kitCustom"></span> €</b></li>
-            <li><span>Camiseta sola</span><b><span data-price="shirtCustom"></span> €</b></li>
+            <li><span>Pedido mínimo</span><b>10 camisetas</b></li>
+            <li><span>Precio</span><b>Según diseño</b></li>
           </ul>
+          <p class="price-note">El coste depende de lo que llevéis. Os lo decimos por WhatsApp antes de empezar. <a class="wa-link" href="#">Preguntar precio</a></p>
         </article>
       </div>
     </div>
@@ -687,8 +690,8 @@ footer ul a:hover{color:#fff;text-decoration:underline}
         <div class="faq-in">
           <h2>Preguntas frecuentes</h2>
           <div class="faq">
-            <details><summary>¿Hay pedido mínimo?</summary><p>No. Puedes pedir una sola equipación o una sola camiseta, al mismo precio que si pedís para todo el equipo.</p></details>
-            <details><summary>¿Qué diferencia hay entre catálogo y a medida?</summary><p>De catálogo es uno de nuestros diseños en los colores que elijáis. A medida os lo diseñamos desde cero con vuestra idea, y os mandamos la propuesta para aprobarla antes de fabricar.</p></details>
+            <details><summary>¿Hay pedido mínimo?</summary><p>En los modelos del catálogo, no: puedes pedir una sola equipación o una sola camiseta, al mismo precio que si pedís para todo el equipo. El diseño a medida es a partir de 10 camisetas.</p></details>
+            <details><summary>¿Qué diferencia hay entre catálogo y a medida?</summary><p>De catálogo es uno de nuestros diseños en los colores que elijáis. A medida os lo diseñamos desde cero con vuestra idea, a partir de 10 camisetas. El precio depende del diseño: os lo decimos por WhatsApp y os mandamos la propuesta para aprobarla antes de fabricar.</p></details>
             <details><summary>¿Qué incluye la equipación completa?</summary><p>Camiseta y pantalón. El escudo, el patrocinador, el nombre y el dorsal de cada jugador van incluidos en el precio, igual que el envío.</p></details>
             <details><summary>¿Puedo poner nuestro escudo y un patrocinador?</summary><p>Sí, los dos van incluidos. Súbelos en el configurador o mándanoslos por WhatsApp, en la mejor calidad que tengas.</p></details>
             <details><summary>¿Me hacéis la camiseta de mi club favorito?</summary><p>No. Solo hacemos diseños propios con vuestro nombre y vuestro escudo. Nada de escudos ni logos de clubes o marcas que no son vuestros.</p></details>
@@ -764,6 +767,7 @@ footer ul a:hover{color:#fff;text-decoration:underline}
   var B = window.__BRAND__ || {};
   var P = B.prices || {kitStd:26.99,kitCustom:34.99,shirtStd:17.99,shirtCustom:22.99};
   var KINDS = {std:"De catálogo", custom:"A medida"};
+  var MIN_MEDIDA = 10; // tiene que coincidir con MINIMO_MEDIDA de api/_lib/comun.js
   function price(piece, kind){ return P[(piece==="kit"?"kit":"shirt")+(kind==="custom"?"Custom":"Std")]; }
   var SIZES = B.sizes || ["S","M","L","XL","2XL"];
 
@@ -1357,6 +1361,8 @@ footer ul a:hover{color:#fff;text-decoration:underline}
     var kits = state.roster.filter(function(r){return r.piece==="kit";}).length;
     var shirts = state.roster.length - kits, k = chosenKind() || "std";
     var unit = price("kit", k), sUnit = price("shirt", k);
+    // A medida no tiene precio fijo: se cierra por WhatsApp
+    if (k === "custom") return {kits:kits, shirts:shirts, custom:true, n:state.roster.length};
     return {kits:kits, shirts:shirts, unit:unit, sUnit:sUnit, total: kits*unit + shirts*sUnit};
   }
   function num(n){ n = Math.round(n*100)/100; return n.toLocaleString("es-ES",{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2}); }
@@ -1374,12 +1380,14 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       lines.push(["Colores", colorName(state.c1,1)+", "+colorName(state.c2,1)+" y cuello "+colorName(state.c3,1)]);
     } else lines.push(["Modelo", "Sin elegir"]);
     if (state.sponsor.trim()) lines.push(["Patrocinador", state.sponsor.trim()]);
-    if (t.kits) lines.push([t.kits+" × equipación completa", eur(t.kits*t.unit)]);
-    if (t.shirts) lines.push([t.shirts+" × camiseta sola", eur(t.shirts*t.sUnit)]);
+    if (t.kits) lines.push([t.kits+" × equipación completa", t.custom ? "a convenir" : eur(t.kits*t.unit)]);
+    if (t.shirts) lines.push([t.shirts+" × camiseta sola", t.custom ? "a convenir" : eur(t.shirts*t.sUnit)]);
     $("sum-lines").innerHTML = lines.map(function(l){ return '<li><span>'+esc(l[0])+'</span><span>'+esc(l[1])+'</span></li>'; }).join("");
-    $("sum-total").textContent = eur(t.total);
+    $("sum-total").textContent = t.custom ? "A convenir" : eur(t.total);
     renderPick();
-    $("sum-nudge").textContent = !chosenKind() ? "Elige un modelo del catálogo o tu diseño a medida." : t.kits || t.shirts
+    $("sum-nudge").textContent = !chosenKind() ? "Elige un modelo del catálogo o tu diseño a medida." : t.custom
+      ? (t.n < MIN_MEDIDA ? "El diseño a medida es a partir de "+MIN_MEDIDA+" camisetas. Llevas "+t.n+"." : "Precio según diseño: te lo decimos por WhatsApp antes de fabricar.")
+      : t.kits || t.shirts
       ? (t.kits ? eur(t.unit)+" por equipación" : "")+(t.kits && t.shirts ? " · " : "")+(t.shirts ? eur(t.sUnit)+" por camiseta" : "")+". Escudo, patrocinador, nombre y dorsal incluidos."
       : "";
     var d = markDups();
@@ -1408,9 +1416,12 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       L.push((i+1)+". "+(r.name.trim()||"Sin nombre")+" · "+(String(r.num).trim()||"sin dorsal")+" · "+r.size+" · "+(r.piece==="kit"?"Completa":"Solo camiseta"));
     });
     L.push("");
-    if (t.kits) L.push(t.kits+" equipaciones completas × "+eur(t.unit));
-    if (t.shirts) L.push(t.shirts+" camisetas solas × "+eur(t.sUnit));
-    L.push("Total estimado: "+eur(t.total)+" (envío incluido)");
+    if (t.custom){ L.push((t.kits ? t.kits+" equipaciones completas" : "")+(t.kits && t.shirts ? " y " : "")+(t.shirts ? t.shirts+" camisetas solas" : "")); L.push("Precio: a convenir (diseño a medida)"); }
+    else {
+      if (t.kits) L.push(t.kits+" equipaciones completas × "+eur(t.unit));
+      if (t.shirts) L.push(t.shirts+" camisetas solas × "+eur(t.sUnit));
+      L.push("Total estimado: "+eur(t.total)+" (envío incluido)");
+    }
     L.push("");
     var need = ["el escudo"];
     if (state.sponsor.trim() || state.sponsorLogo) need.push("el logo del patrocinador");
@@ -1457,6 +1468,7 @@ footer ul a:hover{color:#fff;text-decoration:underline}
   function waTo(text){ return "https://wa.me/"+B.whatsapp+"?text="+encodeURIComponent(text); }
   $("send").addEventListener("click", function(){
     if (!chosenKind()){ flash("Elige primero un modelo del catálogo o tu diseño a medida."); $("camisetas").scrollIntoView({behavior:"smooth"}); return; }
+    if (chosenKind() === "custom" && state.roster.length < MIN_MEDIDA){ flash("El diseño a medida es a partir de "+MIN_MEDIDA+" camisetas. Añade "+(MIN_MEDIDA - state.roster.length)+" más o elige un modelo del catálogo."); return; }
     if (!checkContact()) return;
     var btn = this; btn.disabled = true; btn.textContent = "Enviando...";
     api("pedidos", payload()).then(function(r){
@@ -1549,7 +1561,7 @@ footer ul a:hover{color:#fff;text-decoration:underline}
         + '<div class="acts"><a href="#" data-model="'+state.model.id+'">Cambiar color</a><a href="#camisetas">Ver otros modelos</a></div></div></div>';
     } else if (state.kind === "custom"){
       el.innerHTML = '<div class="pick"><div class="mini">'+shirt(state, "front", {team:""})+'</div><div><h4>Diseño a medida</h4>'
-        + '<p>Punto de partida: '+PATS.filter(function(p){return p[0]===state.pattern;})[0][1]+' · '+colorName(state.c1,1)+' y '+colorName(state.c2,1)+'</p>'
+        + '<p>Punto de partida: '+PATS.filter(function(p){return p[0]===state.pattern;})[0][1]+' · '+colorName(state.c1,1)+' y '+colorName(state.c2,1)+' · desde '+MIN_MEDIDA+' camisetas, precio por WhatsApp</p>'
         + '<div class="acts"><a href="#disena">Editar diseño</a><a href="#camisetas">Ver catálogo</a></div></div></div>';
     } else {
       el.innerHTML = '<div class="pick-empty"><p>Todavía no has elegido equipación.</p><div class="ctas"><a class="btn btn-k" href="#camisetas">Ver catálogo</a><a class="btn btn-o" href="#disena">Diseño a medida</a></div></div>';
