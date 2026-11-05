@@ -28,7 +28,7 @@ export const configurado = {
 };
 let _db, _stripe;
 export function db() {
-  return _db ||= createClient(ENV.SUPABASE_URL, ENV.SUPABASE_SECRET_KEY, { auth: { persistSession: false } });
+  return _db ||= createClient(ENV.SUPABASE_URL.replace(//(rest/v1)?/?$/, ""), ENV.SUPABASE_SECRET_KEY, { auth: { persistSession: false } });
 }
 export function stripe() { return _stripe ||= new Stripe(ENV.STRIPE_SECRET_KEY); }
 
