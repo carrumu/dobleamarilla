@@ -1,13 +1,13 @@
 // POST /api/stripe-webhook: Stripe avisa aquí cuando un pago se completa. Marca el pedido como pagado y guarda la dirección de envío.
 // En Stripe: Desarrolladores > Webhooks > añadir este endpoint con los eventos checkout.session.completed y checkout.session.async_payment_succeeded.
-import { configurado, db, stripe, json, error } from "./_lib/comun.js";
+import { ENV, configurado, db, stripe, json, error } from "./_lib/comun.js";
 
 export async function POST(req) {
-  if (!configurado.db || !configurado.pagos || !process.env.STRIPE_WEBHOOK_SECRET) return error("Sin configurar", 503);
+  if (!configurado.db || !configurado.pagos || !ENV.STRIPE_WEBHOOK_SECRET) return error("Sin configurar", 503);
   const cuerpo = await req.text();
   let ev;
   try {
-    ev = await stripe().webhooks.constructEventAsync(cuerpo, req.headers.get("stripe-signature"), process.env.STRIPE_WEBHOOK_SECRET);
+    ev = await stripe().webhooks.constructEventAsync(cuerpo, req.headers.get("stripe-signature"), ENV.STRIPE_WEBHOOK_SECRET);
   } catch (e) {
     return error("Firma no válida", 400);
   }
