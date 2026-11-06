@@ -1,0 +1,25 @@
+/* Páginas de catálogo y guías. Se apoya en legal.css. */
+:root{--amarillo:#FFD60A}
+.wrap.ancho{max-width:1040px}
+.lead{font-size:19px;line-height:1.5;margin:0 0 18px}
+.incl{list-style:none;padding:0;margin:0 0 24px;display:grid;gap:8px;grid-template-columns:1fr}
+@media(min-width:640px){.incl{grid-template-columns:1fr 1fr}}
+.incl li{background:var(--card);border-radius:10px;padding:10px 14px;margin:0;font-weight:600;font-size:15px}
+.mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 24px}
+@media(min-width:720px){.mini-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+figure{margin:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+figure img{display:block;width:100%;height:auto}
+figcaption{padding:6px 10px;font-size:14px;font-weight:600;border-top:1px solid var(--line)}
+.pasos{padding-left:22px;margin:0 0 20px}
+.pasos li{margin-bottom:8px}
+.ctas{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;border-radius:999px;background:var(--negro);border:2px solid var(--negro);color:#fff;font-weight:700;font-size:16px;text-decoration:none}
+.btn:hover{color:#fff;opacity:.88}
+.btn.o{background:#fff;color:var(--negro)}
+.btn.o:hover{color:var(--negro);background:var(--card);opacity:1}
+.modelo h2{display:flex;align-items:baseline;gap:10px;margin-top:32px}
+.modelo h2 span{font-size:14px;font-weight:500;color:var(--mute)}
+details{border-top:1px solid var(--line);padding:12px 0}
+details:last-of-type{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;font-weight:600}
+details p{margin:8px 0 0}
