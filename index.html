@@ -1542,7 +1542,7 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       var c0 = m.colors[0], c1 = m.colors[1] || c0;
       var dots = m.colors.slice(0,6).map(function(c){ return '<span class="dot" style="background:'+c.hex+'"></span>'; }).join("");
       return '<article class="card"><div class="ph wide">'
-        + '<img src="'+c0.img+'" alt="'+esc(m.name)+'" width="960" height="720" loading="lazy">'
+        + '<img src="'+c0.img+'" alt="Equipación de fútbol personalizada '+esc(m.name)+': camiseta y pantalón" width="960" height="720" loading="lazy">'
         + '<img src="'+c1.img+'" alt="" width="960" height="720" loading="lazy"></div>'
         + '<h3>'+esc(m.name)+'<span class="ref">'+m.colors.length+' colores</span></h3>'
         + '<div class="meta">'+dots+(m.colors.length>6?'<span class="more-c">+'+(m.colors.length-6)+'</span>':'')+'</div>'
