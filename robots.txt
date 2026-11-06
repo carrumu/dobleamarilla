@@ -5,4 +5,17 @@ Disallow: /panel.html
 Disallow: /pedido.html
 Disallow: /api/
 
+# Buscadores de IA: permitidos de forma explícita
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: PerplexityBot
+User-agent: Google-Extended
+Allow: /
+Disallow: /panel.html
+Disallow: /pedido.html
+Disallow: /api/
+
 Sitemap: https://www.dobleeamarilla.com/sitemap.xml
