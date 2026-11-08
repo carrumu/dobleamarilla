@@ -85,10 +85,11 @@ th{font-size:13px;color:var(--mute);font-weight:600}
       <h2>Tu boceto</h2>
       <div id="boceto-view"></div>
       <div id="pay-box" hidden>
-        <button type="button" class="btn btn-y" id="pay">Aprobar y pagar</button>
+        <a class="btn btn-y" id="pay-private" target="_blank" rel="noopener">Aprobar y pagar por Bizum o transferencia</a>
+        <button type="button" class="btn btn-k" id="pay">Aprobar y pagar con tarjeta</button>
         <a class="btn btn-o wa" id="change" target="_blank" rel="noopener">Quiero cambiar algo</a>
         <p class="msg" id="pay-msg" aria-live="polite"></p>
-        <p class="fine">El pago es con tarjeta en la página segura de Stripe. Ahí pones también la dirección de envío. Al pagar aceptas las <a href="condiciones.html">condiciones de compra</a>.</p>
+        <p class="fine">Por Bizum o transferencia: se abre WhatsApp, te paso los datos y te pido la dirección de envío. Con tarjeta: pagas en la página segura de Stripe y ahí pones la dirección. Al pagar aceptas las <a href="condiciones.html">condiciones de compra</a>.</p>
       </div>
     </div>
 
@@ -149,7 +150,8 @@ th{font-size:13px;color:var(--mute);font-weight:600}
       : '<a href="'+esc(p.boceto)+'" target="_blank" rel="noopener"><img src="'+esc(p.boceto)+'" alt="Boceto de la equipación"></a>';
     $("pay-box").hidden = p.estado !== "boceto" || p.precio_pendiente;
     if (p.estado === "boceto" && p.precio_pendiente) $("o-status").textContent = "Revisa el boceto. Cerramos el precio por WhatsApp y aquí te aparecerá el botón para pagar.";
-    $("pay").textContent = "Aprobar y pagar "+eur(p.total_cent);
+    $("pay").textContent = "Aprobar y pagar con tarjeta · "+eur(p.total_cent);
+    $("pay-private").href = "https://wa.me/"+WA+"?text="+encodeURIComponent("Hola, apruebo el boceto del pedido "+p.codigo+" ("+eur(p.total_cent)+"). Te lo pago por Bizum o transferencia, ¿me pasas los datos?");
 
     var rows = [["Equipación", p.diseno]];
     if (p.patrocinador) rows.push(["Patrocinador", p.patrocinador]);
