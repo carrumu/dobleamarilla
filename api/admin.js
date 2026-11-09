@@ -1,6 +1,6 @@
 // POST /api/admin {accion, ...}: todo lo del panel (panel.html). Menos la entrada, pide la sesión firmada.
 import { configurado, db, json, error, sinConfigurar, leerJson, crearSesion, sesionValida, claveCorrecta,
-  urlFirmada, codigoDiseno, refsProveedor, token, MIMES, SITE, lineas } from "./_lib/comun.js";
+  urlFirmada, codigoDiseno, refsProveedor, token, MIMES, SITE, lineas, BRAND } from "./_lib/comun.js";
 
 const ESTADOS = ["nuevo", "boceto", "pagado", "fabricacion", "enviado", "entregado", "cancelado"];
 const ahora = () => new Date().toISOString();
@@ -87,7 +87,7 @@ const acciones = {
       const medida = p.diseno.tipo === "medida" ? [p.diseno.patron, p.diseno.c1, p.diseno.c2, p.diseno.c3].join(" ") : "";
       p.plantilla.forEach((j, i) => filas.push({
         pedido: p.codigo, equipo: p.equipo, modelo: cod, ref: refs[cod.split("-")[0]] || "", diseno_medida: medida,
-        jugador: i + 1, nombre: j.nombre, dorsal: j.dorsal, talla: j.talla, pieza: j.pieza === "kit" ? "camiseta+pantalon" : "camiseta",
+        jugador: i + 1, nombre: j.nombre, dorsal: j.dorsal, talla: j.talla, talla_fabrica: (BRAND.sizesFactory || {})[j.talla] || j.talla, pieza: j.pieza === "kit" ? "camiseta+pantalon" : "camiseta",
         patrocinador: p.patrocinador, escudo: escudo || "", logo_patrocinador: patro || "",
         envio_nombre: d.nombre || p.cliente.nombre, envio_telefono: d.telefono || p.cliente.telefono,
         direccion: [a.line1, a.line2].filter(Boolean).join(", "), cp: a.postal_code || "", ciudad: a.city || "", provincia: a.state || "", pais: a.country || ""
