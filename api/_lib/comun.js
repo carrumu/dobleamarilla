@@ -65,6 +65,8 @@ export function precio(pieza, tipo) {
 export const cent = (eur) => Math.round(eur * 100);
 // Diseño a medida: mínimo de camisetas y precio que se cierra por WhatsApp (lo pone Carlos en el panel)
 export const MINIMO_MEDIDA = 10;
+// Pedido mínimo para cualquier pedido, de catálogo o a medida (proveedor, 2026-11-09)
+export const MINIMO_PEDIDO = 10;
 // Precio por unidad en céntimos; sin precios (a medida recién pedido) las líneas van sin importe y el total a 0
 export function lineas(plantilla, tipo, precios) {
   const kits = plantilla.filter((r) => r.pieza === "kit").length, camis = plantilla.length - kits;
