@@ -73,10 +73,23 @@ async function pagar(p) {
   }
 }
 
+// "Mi pedido": con el código y el correo del pedido devuelve el enlace secreto. Los dos tienen que coincidir.
+async function porCodigo(b) {
+  await new Promise((r) => setTimeout(r, 500)); // frena a quien pruebe códigos al azar
+  const codigo = String(b.codigo || "").trim().toUpperCase().replace(/^P?/, "P");
+  const email = String(b.email || "").trim().toLowerCase();
+  const noEsta = error("No encontramos ningún pedido con ese código y ese correo.", 404);
+  if (!/^P\d{4,6}$/.test(codigo) || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return noEsta;
+  const { data } = await db().from("pedidos").select("token, cliente").eq("codigo", codigo).maybeSingle();
+  if (!data || String((data.cliente && data.cliente.email) || "").toLowerCase() !== email) return noEsta;
+  return json({ enlace: SITE + "/pedido.html?t=" + data.token });
+}
+
 export async function POST(req) {
   if (!configurado.db) return sinConfigurar();
   let b;
   try { b = await leerJson(req, 4096); } catch (e) { return error(e.message); }
+  if (b.accion === "buscar") return porCodigo(b);
   const p = await buscar(b.t);
   if (!p) return error("No encontramos este pedido.", 404);
   if (b.accion === "resena") return resena(p, b);

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Mi pedido · Doble Amarilla</title>
+<meta name="description" content="Consulta el estado de tu pedido de Doble Amarilla con el código y el correo del pedido.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --amarillo:#FFD60A; --negro:#111110; --roja:#D93025;
+  --fg:#111110; --mute:#6b6a65; --line:#e6e5e1; --panel:#f4f4f2;
+  --f-body:"Schibsted Grotesk",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--panel);color:var(--fg);font:400 16px/1.55 var(--f-body);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+header{background:#fff;border-bottom:1px solid var(--line)}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+header .wrap{display:flex;align-items:center;justify-content:space-between;min-height:68px}
+header img{height:28px;width:auto;display:block}
+header nav a{font-weight:600;font-size:15px;text-decoration:none}
+main{padding:40px 0 72px}
+h1{margin:0 0 8px;font-size:clamp(28px,6vw,38px);line-height:1.1;letter-spacing:-.02em}
+.lead{margin:0 0 24px;color:var(--mute)}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px}
+label{display:block;font-size:14px;font-weight:600;margin:0 0 6px}
+input{width:100%;border:1px solid var(--line);border-radius:10px;padding:13px 14px;font:inherit;background:#fff;margin-bottom:14px}
+input:focus{outline:none;border-color:var(--fg)}
+.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;border-radius:999px;border:2px solid var(--negro);background:var(--negro);color:#fff;font-weight:700;font-size:16px;cursor:pointer;text-decoration:none}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn-o{background:#fff;color:var(--negro);margin-top:12px}
+.msg{font-weight:700;margin:12px 0 0;min-height:1em}
+.msg.err{color:var(--roja)}
+.fine{font-size:14px;color:var(--mute);margin:18px 0 0}
+</style>
+<script src="lib/manifest.js"></script>
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<header><div class="wrap"><a href="./"><img src="img/logo.svg" alt="Doble Amarilla" width="164" height="28"></a><nav><a href="./">Volver a la tienda</a></nav></div></header>
+<main class="wrap">
+  <h1>Mi pedido</h1>
+  <p class="lead">Mira cómo va tu pedido, ve el boceto y págalo cuando lo apruebes.</p>
+  <form class="card" id="f" novalidate>
+    <label for="codigo">Código del pedido</label>
+    <input id="codigo" name="codigo" placeholder="P0001" autocomplete="off" autocapitalize="characters" inputmode="text" required>
+    <label for="email">Correo con el que hiciste el pedido</label>
+    <input id="email" name="email" type="email" autocomplete="email" placeholder="tucorreo@ejemplo.com" required>
+    <button class="btn" type="submit" id="go">Ver mi pedido</button>
+    <p class="msg" id="msg" aria-live="polite"></p>
+    <p class="fine">El código está en el correo de confirmación y en el mensaje de WhatsApp de tu pedido. Si no lo encuentras, escríbenos.</p>
+    <a class="btn btn-o" id="wa" target="_blank" rel="noopener">Preguntar por WhatsApp</a>
+  </form>
+</main>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var B = window.__BRAND__ || {};
+  $("wa").href = "https://wa.me/" + (B.whatsapp || "34684315503") + "?text=" + encodeURIComponent("Hola, no encuentro el código de mi pedido.");
+  var q = new URLSearchParams(location.search);
+  if (q.get("codigo")) $("codigo").value = q.get("codigo");
+  $("f").addEventListener("submit", function(e){
+    e.preventDefault();
+    var msg = $("msg"), b = $("go"), codigo = $("codigo").value.trim(), email = $("email").value.trim();
+    if (!codigo || !email){ msg.className = "msg err"; msg.textContent = "Pon el código y el correo del pedido."; return; }
+    b.disabled = true; msg.className = "msg"; msg.textContent = "Buscando...";
+    fetch("api/cliente", {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({accion:"buscar", codigo:codigo, email:email})})
+      .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ if (!r.ok || !j.enlace) throw (j.error || "No se ha podido buscar el pedido."); location.href = j.enlace; }); })
+      .catch(function(err){ b.disabled = false; msg.className = "msg err"; msg.textContent = typeof err === "string" ? err : "Sin conexión. Inténtalo otra vez."; });
+  });
+})();
+</script>
+</body>
+</html>
