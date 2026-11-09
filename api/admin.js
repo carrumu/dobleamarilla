@@ -1,6 +1,7 @@
 // POST /api/admin {accion, ...}: todo lo del panel (panel.html). Menos la entrada, pide la sesión firmada.
 import { configurado, db, json, error, sinConfigurar, leerJson, crearSesion, sesionValida, claveCorrecta,
   urlFirmada, codigoDiseno, refsProveedor, token, MIMES, SITE, lineas, BRAND } from "./_lib/comun.js";
+import { avisarCliente, correoActivo } from "./_lib/correo.js";
 
 const ESTADOS = ["nuevo", "boceto", "pagado", "fabricacion", "enviado", "entregado", "cancelado"];
 const ahora = () => new Date().toISOString();
@@ -36,9 +37,14 @@ const acciones = {
     if (b.estado !== undefined) { if (!ESTADOS.includes(b.estado)) return error("Estado no válido."); cambios.estado = b.estado; }
     if (b.seguimiento !== undefined) cambios.seguimiento = String(b.seguimiento).slice(0, 300);
     if (b.notas !== undefined) cambios.notas = String(b.notas).slice(0, 4000);
-    const { error: e } = await db().from("pedidos").update(cambios).eq("codigo", b.codigo);
+    const { data: antes } = await db().from("pedidos").select("estado, pagado").eq("codigo", b.codigo).single();
+    if (cambios.estado === "pagado" && antes && !antes.pagado) cambios.pagado = ahora(); // pagado por Bizum o transferencia
+    const { data: p, error: e } = await db().from("pedidos").update(cambios).eq("codigo", b.codigo).select("*").single();
     if (e) throw e;
-    return json({ ok: true });
+    // Correo al cliente solo cuando el estado cambia a uno de estos
+    let correo = false;
+    if (antes && cambios.estado && cambios.estado !== antes.estado && ["pagado", "enviado", "entregado"].includes(cambios.estado)) correo = await avisarCliente(cambios.estado, p);
+    return json({ ok: true, correo });
   },
 
   // Precio cerrado por WhatsApp para un pedido a medida: euros por equipación y por camiseta sola
@@ -69,7 +75,23 @@ const acciones = {
     const { data: p } = await db().from("pedidos").select("estado").eq("codigo", b.codigo).single();
     const cambios = { boceto: b.ruta, actualizado: ahora() };
     if (p && p.estado === "nuevo") cambios.estado = "boceto";
-    const { error: e } = await db().from("pedidos").update(cambios).eq("codigo", b.codigo);
+    const { data: nuevo, error: e } = await db().from("pedidos").update(cambios).eq("codigo", b.codigo).select("*").single();
+    if (e) throw e;
+    const correo = nuevo && ["nuevo", "boceto"].includes(nuevo.estado) ? await avisarCliente("boceto", nuevo) : false;
+    return json({ ok: true, correo });
+  },
+
+  // Reseñas: todas, las nuevas primero. aprobar: true/false publica u oculta; borrar: true la elimina
+  async resenas() {
+    const { data, error: e } = await db().from("resenas").select("id, creado, nombre, equipo, estrellas, texto, aprobada, pedidos(codigo)").order("creado", { ascending: false }).limit(200);
+    if (e) return error("Falta crear la tabla de reseñas en Supabase (backend/resenas.sql).", 503);
+    return json({ resenas: data.map((r) => ({ ...r, codigo: r.pedidos ? r.pedidos.codigo : "", pedidos: undefined })), correo: correoActivo() });
+  },
+  async resena(b) {
+    const id = Number(b.id);
+    if (!Number.isInteger(id)) return error("Reseña no válida.");
+    const q = b.borrar ? db().from("resenas").delete().eq("id", id) : db().from("resenas").update({ aprobada: !!b.aprobar }).eq("id", id);
+    const { error: e } = await q;
     if (e) throw e;
     return json({ ok: true });
   },

@@ -50,6 +50,11 @@ th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line)}
 th{font-size:13px;color:var(--mute);font-weight:600}
 .btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;border-radius:999px;border:2px solid var(--negro);font-weight:700;font-size:16px;text-decoration:none;cursor:pointer;margin-top:10px;padding:0 20px}
 .btn-k{background:var(--negro);color:#fff}
+.stars{display:flex;gap:6px;margin:4px 0 14px}
+.stars button{width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:#fff;font-size:24px;line-height:1;color:#d6d5d0;cursor:pointer}
+.stars button.on{color:#E0A800;border-color:#E0A800}
+.op label{display:block;font-size:14px;font-weight:600;margin:10px 0 6px}
+.op input,.op textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;background:#fff}
 .btn-y{background:var(--amarillo);border-color:var(--amarillo);color:var(--negro)}
 .btn-o{background:#fff;color:var(--negro)}
 .btn:disabled{opacity:.6;cursor:wait}
@@ -102,6 +107,18 @@ th{font-size:13px;color:var(--mute);font-weight:600}
         <table><thead><tr><th>#</th><th>Nombre</th><th>Dorsal</th><th>Talla</th><th>Pieza</th></tr></thead><tbody id="o-roster"></tbody></table>
       </details>
     </div>
+    <div class="card op" id="opinion" hidden>
+      <h2>Tu opinión</h2>
+      <p class="status" id="op-intro">¿Qué tal la equipación? Tu opinión la verán otros equipos en la web.</p>
+      <div class="stars" id="op-stars" role="radiogroup" aria-label="Puntuación de 1 a 5"></div>
+      <label for="op-name">Nombre con el que sale</label>
+      <input id="op-name" maxlength="40" autocomplete="given-name">
+      <label for="op-text">Tu opinión</label>
+      <textarea id="op-text" rows="4" maxlength="600" placeholder="Calidad, tallas, cómo quedó el diseño..."></textarea>
+      <button type="button" class="btn btn-k" id="op-send">Enviar opinión</button>
+      <p class="msg" id="op-msg" aria-live="polite"></p>
+    </div>
+
     <a class="btn btn-o wa" target="_blank" rel="noopener">¿Dudas? Escríbeme por WhatsApp</a>
   </div>
 </main>
@@ -163,7 +180,36 @@ th{font-size:13px;color:var(--mute);font-weight:600}
       return "<tr><td>"+(i+1)+"</td><td>"+esc(j.nombre||"-")+"</td><td>"+esc(j.dorsal||"-")+"</td><td>"+esc(j.talla)+"</td><td>"+(j.pieza==="kit"?"Completa":"Camiseta")+"</td></tr>";
     }).join("");
     $("load").hidden = true; $("order").hidden = false;
+    renderOpinion(p);
   }
+
+  // Opinión: solo con el pedido enviado o entregado. Se publica cuando la aprobamos
+  var opStars = 0;
+  function pintaEstrellas(){
+    $("op-stars").innerHTML = [1,2,3,4,5].map(function(n){ return '<button type="button" role="radio" aria-checked="'+(n===opStars)+'" aria-label="'+n+' de 5" data-n="'+n+'" class="'+(n<=opStars?"on":"")+'">★</button>'; }).join("");
+  }
+  function renderOpinion(p){
+    $("opinion").hidden = !p.puede_opinar;
+    if (!p.puede_opinar) return;
+    var r = p.resena;
+    opStars = r ? r.estrellas : 0; pintaEstrellas();
+    $("op-name").value = r ? r.nombre : String(p.nombre_cliente||"").split(" ")[0];
+    $("op-text").value = r ? r.texto : "";
+    $("op-intro").textContent = r ? (r.aprobada ? "Gracias por tu opinión. Ya sale en la web. Si quieres, puedes cambiarla." : "Gracias. La publicaremos en la web después de revisarla. Si quieres, puedes cambiarla.")
+      : "¿Qué tal la equipación? Tu opinión la verán otros equipos en la web.";
+    if (location.hash === "#opinion") setTimeout(function(){ $("opinion").scrollIntoView({behavior:"smooth"}); }, 200);
+  }
+  $("op-stars").addEventListener("click", function(e){ var b = e.target.closest("[data-n]"); if (b){ opStars = +b.dataset.n; pintaEstrellas(); } });
+  $("op-send").addEventListener("click", function(){
+    var b = this, msg = $("op-msg");
+    if (!opStars){ msg.className = "msg err"; msg.textContent = "Elige de 1 a 5 estrellas."; return; }
+    b.disabled = true; msg.className = "msg"; msg.textContent = "Enviando...";
+    fetch("api/cliente", {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({t:t, accion:"resena", estrellas:opStars, nombre:$("op-name").value, texto:$("op-text").value})})
+      .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ if (!r.ok) throw (j.error || "No se ha podido enviar."); }); })
+      .then(function(){ msg.textContent = ""; $("op-intro").textContent = "Gracias. La publicaremos en la web después de revisarla."; },
+            function(err){ msg.className = "msg err"; msg.textContent = typeof err === "string" ? err : "Sin conexión. Inténtalo otra vez."; })
+      .then(function(){ b.disabled = false; });
+  });
 
   // Vuelta de Stripe: el aviso del pago puede tardar unos segundos en llegar
   var tries = 0;

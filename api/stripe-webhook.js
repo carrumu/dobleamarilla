@@ -1,6 +1,7 @@
 // POST /api/stripe-webhook: Stripe avisa aquí cuando un pago se completa. Marca el pedido como pagado y guarda la dirección de envío.
 // En Stripe: Desarrolladores > Webhooks > añadir este endpoint con los eventos checkout.session.completed y checkout.session.async_payment_succeeded.
 import { ENV, configurado, db, stripe, json, error } from "./_lib/comun.js";
+import { avisarCliente } from "./_lib/correo.js";
 
 export async function POST(req) {
   if (!configurado.db || !configurado.pagos || !ENV.STRIPE_WEBHOOK_SECRET) return error("Sin configurar", 503);
@@ -21,9 +22,10 @@ export async function POST(req) {
     nombre: det.name || cd.name || "", telefono: cd.phone || "", email: cd.email || "",
     direccion: det.address || cd.address || null
   };
-  const { error: e } = await db().from("pedidos")
+  const { data: hechos, error: e } = await db().from("pedidos")
     .update({ estado: "pagado", pagado: new Date().toISOString(), envio, stripe_session: s.id, actualizado: new Date().toISOString() })
-    .eq("codigo", s.metadata.pedido).in("estado", ["nuevo", "boceto"]);
+    .eq("codigo", s.metadata.pedido).in("estado", ["nuevo", "boceto"]).select("*");
   if (e) { console.error(e); return error("No se ha podido guardar", 500); } // Stripe lo reintenta
+  if (hechos && hechos[0]) await avisarCliente("pagado", hechos[0]); // solo la primera vez: los reintentos ya no cambian nada
   return json({ ok: true });
 }

@@ -1,5 +1,6 @@
 // POST /api/pedidos: guarda el pedido que manda la web. Aún no se cobra: primero va el boceto.
 import { BRAND, CATALOGO, configurado, db, json, error, sinConfigurar, leerJson, token, lineas, RUTA_SUBIDA, SITE, MINIMO_MEDIDA, MINIMO_PEDIDO } from "./_lib/comun.js";
+import { avisarCliente, avisarTienda } from "./_lib/correo.js";
 
 const PATRONES = ["lisa", "banda", "aros", "rayas", "mitades", "faja", "corte", "laterales", "tarjetas"];
 const HEX = /^#[0-9A-Fa-f]{6}$/;
@@ -57,6 +58,8 @@ export async function POST(req) {
     };
     const { data, error: e } = await db().from("pedidos").insert(fila).select("codigo, token, total_cent").single();
     if (e) throw Object.assign(new Error("No se ha podido guardar el pedido."), { interno: e });
+    const p = { ...fila, codigo: data.codigo };
+    await Promise.all([avisarCliente("recibido", p), avisarTienda(p)]);
     return json({ codigo: data.codigo, total_cent: data.total_cent, enlace: SITE + "/pedido.html?t=" + data.token });
   } catch (e) {
     if (e.interno) { console.error(e.interno); return error(e.message, 500); }

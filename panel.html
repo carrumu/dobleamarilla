@@ -139,12 +139,14 @@ th{font-size:12px;color:var(--mute)}
   $("out").addEventListener("click", salir);
 
   function tabs(){
-    $("tabs").innerHTML = ESTADOS.map(function(e){ return '<button data-f="'+e[0]+'" class="'+(e[0]===filtro?"on":"")+'">'+e[1]+'</button>'; }).join("");
+    $("tabs").innerHTML = ESTADOS.map(function(e){ return '<button data-f="'+e[0]+'" class="'+(e[0]===filtro?"on":"")+'">'+e[1]+'</button>'; }).join("")
+      + '<button data-f="__resenas" class="'+(filtro==="__resenas"?"on":"")+'">Reseñas</button>';
   }
   $("tabs").addEventListener("click", function(e){ var b = e.target.closest("button"); if (!b) return; filtro = b.dataset.f; tabs(); lista(); });
 
   function lista(){
     $("list").innerHTML = '<p class="none">Cargando...</p>';
+    if (filtro === "__resenas") return listaResenas();
     api({accion:"lista", estado:filtro}).then(function(j){
       $("count").textContent = j.pedidos.length+" pedido"+(j.pedidos.length===1?"":"s");
       $("list").innerHTML = j.pedidos.length ? j.pedidos.map(function(p){
@@ -154,7 +156,32 @@ th{font-size:12px;color:var(--mute)}
       }).join("") : '<p class="none">No hay pedidos aquí.</p>';
     }, function(err){ $("list").innerHTML = '<p class="none">'+esc(err)+'</p>'; });
   }
-  $("list").addEventListener("click", function(e){ var b = e.target.closest("[data-c]"); if (!b) return; ver(b.dataset.c); });
+  $("list").addEventListener("click", function(e){
+    var r = e.target.closest("[data-r]");
+    if (r){
+      var act = r.dataset.a;
+      if (act === "borrar" && !confirm("¿Borrar esta reseña? No se puede deshacer.")) return;
+      r.disabled = true;
+      api({accion:"resena", id:+r.dataset.r, aprobar: act === "aprobar", borrar: act === "borrar"}).then(listaResenas, function(err){ alert(err); r.disabled = false; });
+      return;
+    }
+    var b = e.target.closest("[data-c]"); if (!b) return; ver(b.dataset.c);
+  });
+
+  // Reseñas de clientes: salen en la portada cuando se aprueban
+  function listaResenas(){
+    $("detail").innerHTML = '<p class="none">Las reseñas aprobadas salen en la portada. Solo pueden escribirlas clientes con el pedido enviado o entregado.</p>';
+    api({accion:"resenas"}).then(function(j){
+      $("count").textContent = j.resenas.length+" reseña"+(j.resenas.length===1?"":"s")+(j.correo ? "" : " · correos automáticos sin activar");
+      $("list").innerHTML = j.resenas.length ? j.resenas.map(function(r){
+        return '<div class="item" style="cursor:default"><span class="mono">'+esc(r.codigo)+'</span><span class="who">'+"★★★★★".slice(0,r.estrellas)+' · '+esc(r.nombre)+(r.equipo?' · '+esc(r.equipo):'')+'</span>'
+          + '<span class="tag '+(r.aprobada?'t-pagado':'t-nuevo')+'">'+(r.aprobada?'Publicada':'Pendiente')+'</span>'
+          + '<span class="sub" style="white-space:normal">'+esc(r.texto)+'<br>'
+          + (r.aprobada ? '<button class="btn" data-r="'+r.id+'" data-a="ocultar">Ocultar</button> ' : '<button class="btn btn-k" data-r="'+r.id+'" data-a="aprobar">Publicar</button> ')
+          + '<button class="btn" data-r="'+r.id+'" data-a="borrar">Borrar</button></span></div>';
+      }).join("") : '<p class="none">Todavía no hay reseñas.</p>';
+    }, function(err){ $("list").innerHTML = '<p class="none">'+esc(err)+'</p>'; });
+  }
 
   function fileBox(label, url, ruta){
     if (!url) return '<a><span class="pdf">Sin archivo</span>'+label+'</a>';
@@ -204,7 +231,7 @@ th{font-size:12px;color:var(--mute)}
     $("g-save").addEventListener("click", function(){
       var b = this; b.disabled = true;
       api({accion:"guardar", codigo:p.codigo, estado:$("g-estado").value, seguimiento:$("g-seg").value, notas:$("g-notas").value})
-        .then(function(){ $("g-msg").textContent = "Guardado."; lista(); }, function(err){ $("g-msg").textContent = err; })
+        .then(function(j){ $("g-msg").textContent = "Guardado." + (j && j.correo ? " Correo enviado al cliente." : ""); lista(); }, function(err){ $("g-msg").textContent = err; })
         .then(function(){ b.disabled = false; });
     });
     $("csv-one").addEventListener("click", function(){ csv({codigo:p.codigo}, p.codigo); });

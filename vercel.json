@@ -1,8 +1,30 @@
 {
   "functions": {
-    "api/*.js": { "includeFiles": "lib/{manifest,catalogo}.js", "maxDuration": 15 }
+    "api/*.js": {
+      "includeFiles": "lib/{manifest,catalogo}.js",
+      "maxDuration": 15
+    }
   },
   "headers": [
-    { "source": "/(panel|pedido)(.html)?", "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }, { "key": "Referrer-Policy", "value": "no-referrer" }] }
+    {
+      "source": "/(panel|pedido)(.html)?",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/cuanto-cuesta-equipacion-equipo(.html)?",
+      "destination": "/",
+      "permanent": true
+    }
   ]
 }
