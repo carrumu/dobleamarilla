@@ -355,6 +355,11 @@ th,td{padding:14px 18px;text-align:left;border-bottom:1px solid var(--line);font
 th{font-size:13px;color:var(--mute);font-weight:600;background:#fafaf9}
 tbody tr:last-child td{border-bottom:0}
 td:first-child{font-weight:700}
+#tallas table{min-width:760px}
+#tallas th,#tallas td{padding:12px 14px;white-space:nowrap}
+.tallas-nota{max-width:760px;margin-top:18px;color:var(--mute);font-size:15px}
+.tallas-nota p{margin:0 0 10px}
+.tallas-nota b{color:var(--fg)}
 
 /* Preguntas */
 .faq-box{display:grid;background:var(--negro);color:#fff;border-radius:var(--r);overflow:hidden}
@@ -407,7 +412,7 @@ footer ul a:hover{color:#fff;text-decoration:underline}
 {"@context": "https://schema.org", "@type": "Product", "name": "Equipación de fútbol personalizada", "brand": {"@type": "Brand", "name": "Doble Amarilla"}, "description": "Camiseta y pantalón de fútbol con escudo, patrocinador, nombre y dorsal incluidos. 17 modelos y 87 colores, tallas de la 3XS a la 5XL. IVA y envío a España incluidos.", "image": ["https://www.dobleeamarilla.com/img/catalogo/m01-1.webp", "https://www.dobleeamarilla.com/img/catalogo/m02-1.webp", "https://www.dobleeamarilla.com/img/catalogo/m03-1.webp", "https://www.dobleeamarilla.com/img/catalogo/m04-1.webp"], "offers": {"@type": "AggregateOffer", "priceCurrency": "EUR", "lowPrice": "19.99", "highPrice": "26.99", "offerCount": "2", "availability": "https://schema.org/PreOrder", "url": "https://www.dobleeamarilla.com/#camisetas"}}
 </script>
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "¿Qué diferencia hay entre catálogo y a medida?", "acceptedAnswer": {"@type": "Answer", "text": "De catálogo es uno de nuestros diseños en los colores que elijáis. A medida os lo diseñamos desde cero con vuestra idea, a partir de 10 camisetas. El precio depende del diseño: os lo decimos por WhatsApp y os mandamos la propuesta para aprobarla antes de fabricar."}}, {"@type": "Question", "name": "¿Qué incluye la equipación completa?", "acceptedAnswer": {"@type": "Answer", "text": "Camiseta y pantalón. El escudo, el patrocinador, el nombre y el dorsal de cada jugador van incluidos en el precio, igual que el envío."}}, {"@type": "Question", "name": "¿Puedo poner nuestro escudo y un patrocinador?", "acceptedAnswer": {"@type": "Answer", "text": "Sí, los dos van incluidos. Súbelos en el configurador o mándanoslos por WhatsApp, en la mejor calidad que tengas."}}, {"@type": "Question", "name": "¿Me hacéis la camiseta de mi club favorito?", "acceptedAnswer": {"@type": "Answer", "text": "No. Solo hacemos diseños propios con vuestro nombre y vuestro escudo. Nada de escudos ni logos de clubes o marcas que no son vuestros."}}, {"@type": "Question", "name": "¿Cuánto tarda y cómo se paga?", "acceptedAnswer": {"@type": "Answer", "text": "Menos de 20 días laborables desde que apruebas la propuesta. Puedes pagar por Bizum, por transferencia o con tarjeta, y siempre después de ver la propuesta."}}]}
+{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "¿Qué diferencia hay entre catálogo y a medida?", "acceptedAnswer": {"@type": "Answer", "text": "De catálogo es uno de nuestros diseños en los colores que elijáis. A medida os lo diseñamos desde cero con vuestra idea, a partir de 10 camisetas. El precio depende del diseño: os lo decimos por WhatsApp y os mandamos la propuesta para aprobarla antes de fabricar."}}, {"@type": "Question", "name": "¿Qué incluye la equipación completa?", "acceptedAnswer": {"@type": "Answer", "text": "Camiseta y pantalón. El escudo, el patrocinador, el nombre y el dorsal de cada jugador van incluidos en el precio, igual que el envío."}}, {"@type": "Question", "name": "¿Puedo poner nuestro escudo y un patrocinador?", "acceptedAnswer": {"@type": "Answer", "text": "Sí, los dos van incluidos. Súbelos en el configurador o mándanoslos por WhatsApp, en la mejor calidad que tengas."}}, {"@type": "Question", "name": "¿Me hacéis la camiseta de mi club favorito?", "acceptedAnswer": {"@type": "Answer", "text": "No. Solo hacemos diseños propios con vuestro nombre y vuestro escudo. Nada de escudos ni logos de clubes o marcas que no son vuestros."}}, {"@type": "Question", "name": "¿Hay pedido mínimo?", "acceptedAnswer": {"@type": "Answer", "text": "En los modelos del catálogo, no: puedes pedir una sola equipación o una sola camiseta, al mismo precio que si pedís para todo el equipo. El diseño a medida es a partir de 10 camisetas."}}, {"@type": "Question", "name": "¿Cuánto tarda y cómo se paga?", "acceptedAnswer": {"@type": "Answer", "text": "Menos de 20 días laborables desde que apruebas la propuesta. Puedes pagar por Bizum, por transferencia o con tarjeta, y siempre después de ver la propuesta."}}]}
 </script>
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -704,10 +709,14 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       <div class="sec-head">
         <div>
           <h2>Guía de tallas</h2>
-          <p>Hay tallas de la 3XS a la 5XL. Estamos midiendo cada modelo para publicar su tabla. Mientras tanto, mándanos por WhatsApp la altura y el peso de los jugadores con dudas y te decimos qué talla pedir.</p>
+          <p>De la 3XS a la 5XL. Tallan más pequeño que en Europa: elige por altura y peso.</p>
         </div>
-        <a class="more wa-link" href="#">Preguntar por WhatsApp ›</a>
+        <a class="more" href="guia-de-tallas.html">Guía completa ›</a>
       </div>
+      <div class="table tbl-wrap"><table><thead><tr><th>Talla</th><th>Altura (cm)</th><th>Peso (kg)</th><th>Equivale en Europa</th><th>Ancho de pecho (cm)</th><th>Largo camiseta (cm)</th><th>Largo pantalón (cm)</th></tr></thead><tbody><tr><td>3XS</td><td>115-125</td><td>20-25</td><td>Niño 6-8 años</td><td>39</td><td>54</td><td>36,5</td></tr><tr><td>2XS</td><td>125-135</td><td>25-30</td><td>Niño 8-10 años</td><td>41</td><td>57</td><td>38</td></tr><tr><td>XS</td><td>135-145</td><td>30-35</td><td>Niño 10-12 años</td><td>43</td><td>60</td><td>39,5</td></tr><tr><td>S</td><td>145-155</td><td>35-40</td><td>Niño 12-14 años o XS de adulto</td><td>45</td><td>63</td><td>41</td></tr><tr><td>M</td><td>155-165</td><td>40-55</td><td>S</td><td>48</td><td>66</td><td>42,5</td></tr><tr><td>L</td><td>165-170</td><td>50-65</td><td>S / M</td><td>50</td><td>68</td><td>44</td></tr><tr><td>XL</td><td>170-175</td><td>60-75</td><td>M</td><td>52</td><td>70</td><td>45,5</td></tr><tr><td>2XL</td><td>175-180</td><td>65-80</td><td>M / L</td><td>54</td><td>72</td><td>47</td></tr><tr><td>3XL</td><td>180-185</td><td>75-85</td><td>L</td><td>56</td><td>74</td><td>48,5</td></tr><tr><td>4XL</td><td>185-190</td><td>80-90</td><td>L / XL</td><td>58</td><td>76</td><td>50</td></tr><tr><td>5XL</td><td>190-200</td><td>90-100</td><td>XL</td><td>60</td><td>78</td><td>52</td></tr></tbody></table></div>
+      <div class="tallas-nota"><p>Son tallas de fábrica asiática: <b>tallan más pequeño que en Europa</b>. Elige por altura y peso, o mira la columna de equivalencia. Si estás entre dos tallas, coge la grande.</p>
+<p><b>Cómo medir.</b> Ancho de pecho: con la camiseta estirada, de axila a axila. Largo: desde el punto más alto del hombro hasta el bajo. Compara con una camiseta tuya que te quede bien.</p>
+<p>Medidas en plano dadas por el fabricante, con 1 o 2 cm de margen. Algún modelo puede variar 1 o 2 cm. La equivalencia europea es orientativa.</p></div>
     </div>
   </section>
 
@@ -751,7 +760,7 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       </div>
       <div>
         <h4>Tienda</h4>
-        <ul><li><a href="#camisetas">Camisetas</a></li><li><a href="#disena">Personalizar</a></li><li><a href="#precios">Precios</a></li><li><a href="catalogo.html">Catálogo completo</a></li><li><a href="equipaciones-futbol-7.html">Equipaciones de fútbol 7</a></li><li><a href="equipaciones-futbol-sala.html">Equipaciones de fútbol sala</a></li><li><a href="camisetas-futbol-personalizadas.html">Camisetas personalizadas</a></li><li><a href="cuanto-cuesta-equipacion-equipo.html">Cuánto cuesta equipar a un equipo</a></li></ul>
+        <ul><li><a href="#camisetas">Camisetas</a></li><li><a href="#disena">Personalizar</a></li><li><a href="#precios">Precios</a></li><li><a href="catalogo.html">Catálogo completo</a></li><li><a href="equipaciones-futbol-7.html">Equipaciones de fútbol 7</a></li><li><a href="equipaciones-futbol-sala.html">Equipaciones de fútbol sala</a></li><li><a href="camisetas-futbol-personalizadas.html">Camisetas personalizadas</a></li><li><a href="cuanto-cuesta-equipacion-equipo.html">Cuánto cuesta equipar a un equipo</a></li><li><a href="guia-de-tallas.html">Guía de tallas</a></li></ul>
       </div>
       <div>
         <h4>Ayuda</h4>

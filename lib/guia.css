@@ -25,3 +25,5 @@ summary{cursor:pointer;font-weight:600}
 details p{margin:8px 0 0}
 .table table{min-width:0}
 @media(max-width:480px){th,td{padding:10px 6px;font-size:14px}}
+.tbl-wrap table{min-width:720px}
+.tbl-wrap th,.tbl-wrap td{white-space:nowrap}
