@@ -102,3 +102,22 @@ export async function avisarTienda(p) {
   return enviar({ para, asunto: `Pedido nuevo ${p.codigo}`, html: plantilla({ titulo: `Pedido nuevo ${p.codigo}`, parrafos: lineas, boton: { texto: "Abrir el panel", url: SITE + "/panel.html" }, pie: "Aviso automático de la web." }),
     texto: lineas.join("\n").replace(/&[a-z#0-9]+;/g, "") + "\n\n" + SITE + "/panel.html" });
 }
+
+// Botón "Probar correo" del panel: manda un correo de prueba y devuelve el motivo si Resend lo rechaza
+export async function correoPrueba() {
+  if (!correoActivo()) return { ok: false, motivo: "Falta la variable RESEND_API_KEY en Vercel (y volver a desplegar)." };
+  const para = ENV.CORREO_AVISOS || RESPUESTA();
+  const html = plantilla({ titulo: "Correo de prueba", parrafos: ["Si lees esto, los correos automáticos de la tienda funcionan.", "Remitente: " + esc(REMITENTE()) + "."], pie: "Prueba lanzada desde el panel." });
+  try {
+    const r = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { authorization: "Bearer " + ENV.RESEND_API_KEY, "content-type": "application/json" },
+      body: JSON.stringify({ from: REMITENTE(), to: [para], reply_to: RESPUESTA(), subject: "Prueba de correo · Doble Amarilla", html, text: "Si lees esto, los correos automáticos funcionan." })
+    });
+    if (r.ok) return { ok: true, para };
+    const j = await r.json().catch(() => ({}));
+    return { ok: false, para, motivo: "Resend dice: " + (j.message || r.status) };
+  } catch (e) {
+    return { ok: false, para, motivo: "No se ha podido conectar con Resend: " + e.message };
+  }
+}

@@ -1,7 +1,7 @@
 // POST /api/admin {accion, ...}: todo lo del panel (panel.html). Menos la entrada, pide la sesión firmada.
 import { configurado, db, json, error, sinConfigurar, leerJson, crearSesion, sesionValida, claveCorrecta,
   urlFirmada, codigoDiseno, refsProveedor, token, MIMES, SITE, lineas, BRAND } from "./_lib/comun.js";
-import { avisarCliente, correoActivo } from "./_lib/correo.js";
+import { avisarCliente, correoActivo, correoPrueba } from "./_lib/correo.js";
 
 const ESTADOS = ["nuevo", "boceto", "pagado", "fabricacion", "enviado", "entregado", "cancelado"];
 const ahora = () => new Date().toISOString();
@@ -95,6 +95,8 @@ const acciones = {
     if (e) throw e;
     return json({ ok: true });
   },
+
+  async probarCorreo() { return json(await correoPrueba()); },
 
   // Para pasar a MateFulfill: una fila por jugador con el envío y los enlaces a los logos (válidos 7 días)
   async exportar(b) {

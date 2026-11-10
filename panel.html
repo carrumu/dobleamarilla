@@ -103,6 +103,7 @@ th{font-size:12px;color:var(--mute)}
     <div class="listbar">
       <span class="note" id="count"></span>
       <button class="btn" id="csv-all">CSV de pagados para MateFulfill</button>
+      <button class="btn" id="mail-test">Probar correo</button>
     </div>
     <div class="list" id="list"></div>
   </section>
@@ -271,6 +272,11 @@ th{font-size:12px;color:var(--mute)}
     }, function(err){ alert(err); });
   }
   $("csv-all").addEventListener("click", function(){ csv({}, "pagados"); });
+  $("mail-test").addEventListener("click", function(){
+    var b = this; b.disabled = true;
+    api({accion:"probarCorreo"}).then(function(j){ alert(j.ok ? "Correo de prueba enviado a " + j.para + ". Mira la bandeja de entrada (y el spam)." : "No se ha enviado. " + j.motivo); }, function(err){ alert(err); })
+      .then(function(){ b.disabled = false; });
+  });
 
   if (ses) entrar(); else $("login").hidden = false;
 })();
