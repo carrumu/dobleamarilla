@@ -28,6 +28,7 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Sofia+Sans+Extra+Condensed:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
 <script src="lib/manifest.js"></script>
 <script src="lib/catalogo.js"></script>
+<script src="lib/colores.js"></script>
 <style>
 :root{
   --amarillo:#FFD60A; --sombra:#E0A800; --negro:#111110; --cal:#F4F1E8; --roja:#D93025;
@@ -149,6 +150,31 @@ footer .logo img{height:34px}
 .card .btn{margin-top:auto;width:100%;min-height:44px;font-size:14px}
 @media(min-width:900px){.card{padding:12px}.card h3{font-size:17px}}
 .grid-cta{display:flex;justify-content:center;margin-top:32px}
+/* Buscador por colores */
+.finder{background:var(--card);border-radius:var(--r);padding:20px 16px;margin-bottom:18px}
+@media(min-width:900px){.finder{padding:26px 28px}}
+.f-head h3{margin:0;font-size:19px;font-weight:700;line-height:1.25}
+.f-head p{margin:4px 0 16px;color:var(--mute);font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px 0 8px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:border-color .15s ease,background .15s ease}
+.chip:hover{border-color:#bdbcb6}
+.chip i{width:24px;height:24px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(17,17,16,.16);flex:none}
+.chip[aria-pressed="true"]{border-color:var(--fg);background:var(--fg);color:#fff}
+.chip[aria-pressed="true"] i{box-shadow:inset 0 0 0 1px rgba(255,255,255,.5)}
+.chip:disabled{opacity:.4;cursor:not-allowed}
+@media(max-width:599px){.chips{gap:6px}.chip{min-height:36px;padding:0 11px 0 6px;font-size:13px;gap:6px}.chip i{width:20px;height:20px}}
+.chip.clear{padding:0 14px;background:transparent;border-color:transparent;text-decoration:underline;text-underline-offset:3px}
+.viewbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;margin-bottom:16px}
+.v-count{margin:0;font-weight:600;font-size:15px}
+.seg{display:inline-flex;padding:4px;border-radius:12px;background:var(--panel)}
+.seg button{min-height:38px;padding:0 14px;border:0;border-radius:9px;background:transparent;font-size:14px;font-weight:600;color:var(--mute);cursor:pointer}
+.seg button[aria-pressed="true"]{background:#fff;color:var(--fg);box-shadow:0 1px 3px rgba(17,17,16,.12)}
+.card .tags{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin:0 0 12px}
+.card .tags span{font-size:12px;font-weight:600;padding:3px 8px;border-radius:999px;background:var(--panel);color:#3d3d3a}
+.card .tags span.hit{background:var(--amarillo);color:var(--negro)}
+.nomatch{margin:0 0 16px;padding:14px 16px;border-radius:12px;background:#fff8d6;font-size:15px}
+.medida-cta{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;margin-top:28px;padding:20px;border:1px solid var(--line);border-radius:var(--r)}
+.medida-cta p{margin:0;max-width:640px}
 
 /* Portada partida */
 .hero-split{display:grid;gap:24px;align-items:center;background:var(--card);border-radius:var(--r);padding:28px 20px;overflow:hidden}
@@ -482,8 +508,8 @@ footer ul a:hover{color:#fff;text-decoration:underline}
     <div>
       <button type="button" class="burger" id="burger" aria-expanded="false" aria-controls="mnav" aria-label="Abrir menú"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
       <ul class="nav-links">
-        <li><a href="#camisetas">Camisetas</a></li>
-        <li><a href="hacer-pedido.html#disena">Personalizar</a></li>
+        <li><a href="#camisetas">Equipaciones</a></li>
+        <li><a href="#colores">Por colores</a></li>
         <li><a href="#a-medida">A medida</a></li>
         <li><a href="#faq">Ayuda</a></li>
       </ul>
@@ -492,7 +518,7 @@ footer ul a:hover{color:#fff;text-decoration:underline}
     <div class="nav-right"><a class="btn btn-k" href="hacer-pedido.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4z"/></svg><span>Hacer pedido</span></a></div>
   </div>
   <nav class="mnav" id="mnav" aria-label="Menú">
-    <a href="#camisetas">Camisetas</a><a href="hacer-pedido.html#disena">Personalizar</a><a href="#a-medida">A medida</a><a href="#tallas">Guía de tallas</a><a href="#faq">Preguntas frecuentes</a><a href="mi-pedido.html">Mi pedido</a><a href="#contacto">Contacto</a>
+    <a href="#camisetas">Equipaciones</a><a href="#colores">Por colores</a><a href="#a-medida">A medida</a><a href="#tallas">Guía de tallas</a><a href="#faq">Preguntas frecuentes</a><a href="mi-pedido.html">Mi pedido</a><a href="#contacto">Contacto</a>
   </nav>
 </header>
 
@@ -501,11 +527,11 @@ footer ul a:hover{color:#fff;text-decoration:underline}
     <div class="wrap">
       <div class="hero-split">
         <div class="hs-text">
-          <h1>Diseñamos la equipación de tu equipo</h1>
-          <p>Desde cero, con vuestra idea y vuestros colores. Con el escudo, el patrocinador y el nombre y dorsal de cada uno. Os enseñamos la propuesta antes de fabricar.</p>
+          <h1>Equipaciones de fútbol personalizadas</h1>
+          <p>Elige modelo y color, o dinos los colores de tu equipo y te enseñamos las que los llevan. Con vuestro escudo, vuestro patrocinador y el nombre y dorsal de cada uno.</p>
           <div class="ctas">
-            <a class="btn btn-k" href="hacer-pedido.html#disena">Diseñar la nuestra</a>
-            <a class="btn btn-o" href="#a-medida">Cómo funciona</a>
+            <a class="btn btn-k" href="#camisetas">Ver equipaciones</a>
+            <a class="btn btn-o" href="#colores">Buscar por colores</a>
           </div>
         </div>
         <div class="hs-media" aria-hidden="true">
@@ -518,13 +544,62 @@ footer ul a:hover{color:#fff;text-decoration:underline}
     </div>
   </section>
 
+  <section id="camisetas">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <h2>Equipaciones</h2>
+          <p>Elige modelo y color. El escudo, el patrocinador y los nombres y dorsales los ponemos nosotros.</p>
+        </div>
+        <a class="more" href="hacer-pedido.html#disena">Prefiero diseñarla desde cero ›</a>
+      </div>
+      <div class="finder" id="colores">
+        <div class="f-head">
+          <h3>¿De qué colores es vuestro equipo?</h3>
+          <p>Marcad hasta tres y os enseñamos las equipaciones que los llevan.</p>
+        </div>
+        <div class="chips" id="chips" role="group" aria-label="Colores del equipo"></div>
+      </div>
+      <div class="viewbar">
+        <p class="v-count" id="v-count" aria-live="polite"></p>
+        <div class="seg" id="seg" role="group" aria-label="Cómo ver el catálogo">
+          <button type="button" data-view="modelos" aria-pressed="true">Por modelo</button>
+          <button type="button" data-view="colores" aria-pressed="false">Todos los colores</button>
+        </div>
+      </div>
+      <div class="grid" id="grid">
+<article class="card"><div class="ph wide"><img src="img/catalogo/m01-1.webp" alt="Equipación de fútbol personalizada DA01: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m01-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA01<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#592E8A"></span><span class="dot" style="background:#3266C3"></span><span class="dot" style="background:#8E1227"></span><span class="dot" style="background:#E7E6F4"></span><span class="dot" style="background:#F85C17"></span></div><button type="button" class="btn btn-k" data-model="m01">Ver colores y elegir</button></article>
+<article class="card"><div class="ph wide"><img src="img/catalogo/m02-1.webp" alt="Equipación de fútbol personalizada DA02: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m02-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA02<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#CE181B"></span><span class="dot" style="background:#F25513"></span><span class="dot" style="background:#151515"></span><span class="dot" style="background:#E3E4F5"></span><span class="dot" style="background:#2D5EB8"></span></div><button type="button" class="btn btn-k" data-model="m02">Ver colores y elegir</button></article>
+<article class="card"><div class="ph wide"><img src="img/catalogo/m03-1.webp" alt="Equipación de fútbol personalizada DA03: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m03-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA03<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#FB8A86"></span><span class="dot" style="background:#6DCEAD"></span><span class="dot" style="background:#E1E1ED"></span><span class="dot" style="background:#8D2764"></span><span class="dot" style="background:#7D1C28"></span></div><button type="button" class="btn btn-k" data-model="m03">Ver colores y elegir</button></article>
+<article class="card"><div class="ph wide"><img src="img/catalogo/m04-1.webp" alt="Equipación de fútbol personalizada DA04: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m04-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA04<span class="ref">7 colores</span></h3><div class="meta"><span class="dot" style="background:#E7E4F3"></span><span class="dot" style="background:#F55815"></span><span class="dot" style="background:#14413A"></span><span class="dot" style="background:#C81113"></span><span class="dot" style="background:#1A1A1A"></span><span class="dot" style="background:#F0D342"></span><span class="more-c">+1</span></div><button type="button" class="btn btn-k" data-model="m04">Ver colores y elegir</button></article>
+<article class="card"><div class="ph wide"><img src="img/catalogo/m05-1.webp" alt="Equipación de fútbol personalizada DA05: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m05-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA05<span class="ref">6 colores</span></h3><div class="meta"><span class="dot" style="background:#FE9C9E"></span><span class="dot" style="background:#EDE3F8"></span><span class="dot" style="background:#BB171B"></span><span class="dot" style="background:#CCFC7C"></span><span class="dot" style="background:#86E5F3"></span><span class="dot" style="background:#1A203D"></span></div><button type="button" class="btn btn-k" data-model="m05">Ver colores y elegir</button></article>
+<article class="card"><div class="ph wide"><img src="img/catalogo/m06-1.webp" alt="Equipación de fútbol personalizada DA06: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m06-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA06<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#FD652B"></span><span class="dot" style="background:#87E3F2"></span><span class="dot" style="background:#B91619"></span><span class="dot" style="background:#FDA0AC"></span><span class="dot" style="background:#CAFA7F"></span></div><button type="button" class="btn btn-k" data-model="m06">Ver colores y elegir</button></article>
+<article class="card"><div class="ph wide"><img src="img/catalogo/m07-1.webp" alt="Equipación de fútbol personalizada DA07: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m07-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA07<span class="ref">6 colores</span></h3><div class="meta"><span class="dot" style="background:#DEDCF0"></span><span class="dot" style="background:#D3FD7F"></span><span class="dot" style="background:#FEA1A9"></span><span class="dot" style="background:#1E2549"></span><span class="dot" style="background:#8DE5F2"></span><span class="dot" style="background:#262865"></span></div><button type="button" class="btn btn-k" data-model="m07">Ver colores y elegir</button></article>
+<article class="card"><div class="ph wide"><img src="img/catalogo/m08-1.webp" alt="Equipación de fútbol personalizada DA08: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m08-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA08<span class="ref">6 colores</span></h3><div class="meta"><span class="dot" style="background:#1B203F"></span><span class="dot" style="background:#FE9D9F"></span><span class="dot" style="background:#E9E6F9"></span><span class="dot" style="background:#FE6026"></span><span class="dot" style="background:#88E0CC"></span><span class="dot" style="background:#6BD8E4"></span></div><button type="button" class="btn btn-k" data-model="m08">Ver colores y elegir</button></article>
+<article class="card"><div class="ph wide"><img src="img/catalogo/m09-1.webp" alt="Equipación de fútbol personalizada DA09: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m09-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA09<span class="ref">6 colores</span></h3><div class="meta"><span class="dot" style="background:#E9E3F1"></span><span class="dot" style="background:#B7ECE2"></span><span class="dot" style="background:#C9E1F6"></span><span class="dot" style="background:#DC3524"></span><span class="dot" style="background:#F79D97"></span><span class="dot" style="background:#4044BA"></span></div><button type="button" class="btn btn-k" data-model="m09">Ver colores y elegir</button></article>
+<article class="card"><div class="ph wide"><img src="img/catalogo/m10-1.webp" alt="Equipación de fútbol personalizada DA10: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m10-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA10<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#CACBF6"></span><span class="dot" style="background:#94E3E6"></span><span class="dot" style="background:#35615A"></span><span class="dot" style="background:#EB3F3B"></span><span class="dot" style="background:#466DC3"></span></div><button type="button" class="btn btn-k" data-model="m10">Ver colores y elegir</button></article>
+<article class="card"><div class="ph wide"><img src="img/catalogo/m11-1.webp" alt="Equipación de fútbol personalizada DA11: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m11-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA11<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#CCBDDD"></span><span class="dot" style="background:#92D4C6"></span><span class="dot" style="background:#7AACE3"></span><span class="dot" style="background:#D20D0F"></span><span class="dot" style="background:#DCDCE4"></span></div><button type="button" class="btn btn-k" data-model="m11">Ver colores y elegir</button></article>
+<article class="card"><div class="ph wide"><img src="img/catalogo/m12-1.webp" alt="Equipación de fútbol personalizada DA12: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m12-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA12<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#4B3C7E"></span><span class="dot" style="background:#C9AF70"></span><span class="dot" style="background:#C81731"></span><span class="dot" style="background:#293455"></span><span class="dot" style="background:#DDDCE3"></span></div><button type="button" class="btn btn-k" data-model="m12">Ver colores y elegir</button></article>
+<article class="card"><div class="ph wide"><img src="img/catalogo/m13-1.webp" alt="Equipación de fútbol personalizada DA13: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m13-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA13<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#F7CFE6"></span><span class="dot" style="background:#BFF4EE"></span><span class="dot" style="background:#D73E3D"></span><span class="dot" style="background:#FA743B"></span><span class="dot" style="background:#F9E15F"></span></div><button type="button" class="btn btn-k" data-model="m13">Ver colores y elegir</button></article>
+<article class="card"><div class="ph wide"><img src="img/catalogo/m14-1.webp" alt="Equipación de fútbol personalizada DA14: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m14-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA14<span class="ref">4 colores</span></h3><div class="meta"><span class="dot" style="background:#E1E0E3"></span><span class="dot" style="background:#E4DB75"></span><span class="dot" style="background:#E11A2B"></span><span class="dot" style="background:#273AB2"></span></div><button type="button" class="btn btn-k" data-model="m14">Ver colores y elegir</button></article>
+<article class="card"><div class="ph wide"><img src="img/catalogo/m15-1.webp" alt="Equipación de fútbol personalizada DA15: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m15-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA15<span class="ref">2 colores</span></h3><div class="meta"><span class="dot" style="background:#9C7EC7"></span><span class="dot" style="background:#E8EBF7"></span></div><button type="button" class="btn btn-k" data-model="m15">Ver colores y elegir</button></article>
+<article class="card"><div class="ph wide"><img src="img/catalogo/m16-1.webp" alt="Equipación de fútbol personalizada DA16: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m16-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA16<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#7CE1C9"></span><span class="dot" style="background:#98CAF1"></span><span class="dot" style="background:#D0131F"></span><span class="dot" style="background:#DAE5F1"></span><span class="dot" style="background:#AEAFE8"></span></div><button type="button" class="btn btn-k" data-model="m16">Ver colores y elegir</button></article>
+<article class="card"><div class="ph wide"><img src="img/catalogo/m17-1.webp" alt="Equipación de fútbol personalizada DA17: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m17-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA17<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#D7E0EC"></span><span class="dot" style="background:#1B2945"></span><span class="dot" style="background:#D9E1ED"></span><span class="dot" style="background:#DE2126"></span><span class="dot" style="background:#234DA7"></span></div><button type="button" class="btn btn-k" data-model="m17">Ver colores y elegir</button></article>
+      </div>
+      <div class="medida-cta">
+        <p><b>¿No encontráis vuestros colores?</b> La diseñamos a medida, con vuestra idea y vuestros colores.</p>
+        <a class="btn btn-o" href="#a-medida">Diseño a medida</a>
+      </div>
+    </div>
+  </section>
+
   <section id="a-medida">
     <div class="wrap">
       <div class="star">
         <div class="star-in">
           <span class="eyebrow">Diseño a medida</span>
           <h2>Una equipación que no lleva nadie más</h2>
-          <p class="star-lead">No elegís de un catálogo: la diseñamos con vosotros. Vosotros ponéis la idea y nosotros el diseño, la fabricación y el envío.</p>
+          <p class="star-lead">Si ningún modelo os convence, la diseñamos con vosotros desde cero. Vosotros ponéis la idea y nosotros el diseño, la fabricación y el envío.</p>
           <ol class="steps3">
             <li><i>1</i><b>Nos contáis la idea</b><span>Colores, estilo, lo que tiene que llevar. Podéis partir de una base y girarla en 3D.</span></li>
             <li><i>2</i><b>Os mandamos la propuesta</b><span>Con vuestro escudo y patrocinador. Se cambia lo que haga falta hasta que os guste.</span></li>
@@ -568,36 +643,6 @@ footer ul a:hover{color:#fff;text-decoration:underline}
     </div>
   </section>
 
-  <section id="camisetas">
-    <div class="wrap">
-      <div class="sec-head">
-        <div>
-          <h2>Nuestros modelos</h2>
-          <p>17 modelos en el color que queráis. El escudo, el patrocinador y los nombres y dorsales los ponemos nosotros.</p>
-        </div>
-        <a class="more" href="catalogo.html">Ver todos los colores ›</a>
-      </div>
-      <div class="grid" id="grid">
-<article class="card"><div class="ph wide"><img src="img/catalogo/m01-1.webp" alt="Equipación de fútbol personalizada DA01: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m01-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA01<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#592E8A"></span><span class="dot" style="background:#3266C3"></span><span class="dot" style="background:#8E1227"></span><span class="dot" style="background:#E7E6F4"></span><span class="dot" style="background:#F85C17"></span></div><button type="button" class="btn btn-k" data-model="m01">Ver colores y elegir</button></article>
-<article class="card"><div class="ph wide"><img src="img/catalogo/m02-1.webp" alt="Equipación de fútbol personalizada DA02: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m02-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA02<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#CE181B"></span><span class="dot" style="background:#F25513"></span><span class="dot" style="background:#151515"></span><span class="dot" style="background:#E3E4F5"></span><span class="dot" style="background:#2D5EB8"></span></div><button type="button" class="btn btn-k" data-model="m02">Ver colores y elegir</button></article>
-<article class="card"><div class="ph wide"><img src="img/catalogo/m03-1.webp" alt="Equipación de fútbol personalizada DA03: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m03-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA03<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#FB8A86"></span><span class="dot" style="background:#6DCEAD"></span><span class="dot" style="background:#E1E1ED"></span><span class="dot" style="background:#8D2764"></span><span class="dot" style="background:#7D1C28"></span></div><button type="button" class="btn btn-k" data-model="m03">Ver colores y elegir</button></article>
-<article class="card"><div class="ph wide"><img src="img/catalogo/m04-1.webp" alt="Equipación de fútbol personalizada DA04: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m04-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA04<span class="ref">7 colores</span></h3><div class="meta"><span class="dot" style="background:#E7E4F3"></span><span class="dot" style="background:#F55815"></span><span class="dot" style="background:#14413A"></span><span class="dot" style="background:#C81113"></span><span class="dot" style="background:#1A1A1A"></span><span class="dot" style="background:#F0D342"></span><span class="more-c">+1</span></div><button type="button" class="btn btn-k" data-model="m04">Ver colores y elegir</button></article>
-<article class="card"><div class="ph wide"><img src="img/catalogo/m05-1.webp" alt="Equipación de fútbol personalizada DA05: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m05-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA05<span class="ref">6 colores</span></h3><div class="meta"><span class="dot" style="background:#FE9C9E"></span><span class="dot" style="background:#EDE3F8"></span><span class="dot" style="background:#BB171B"></span><span class="dot" style="background:#CCFC7C"></span><span class="dot" style="background:#86E5F3"></span><span class="dot" style="background:#1A203D"></span></div><button type="button" class="btn btn-k" data-model="m05">Ver colores y elegir</button></article>
-<article class="card"><div class="ph wide"><img src="img/catalogo/m06-1.webp" alt="Equipación de fútbol personalizada DA06: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m06-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA06<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#FD652B"></span><span class="dot" style="background:#87E3F2"></span><span class="dot" style="background:#B91619"></span><span class="dot" style="background:#FDA0AC"></span><span class="dot" style="background:#CAFA7F"></span></div><button type="button" class="btn btn-k" data-model="m06">Ver colores y elegir</button></article>
-<article class="card"><div class="ph wide"><img src="img/catalogo/m07-1.webp" alt="Equipación de fútbol personalizada DA07: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m07-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA07<span class="ref">6 colores</span></h3><div class="meta"><span class="dot" style="background:#DEDCF0"></span><span class="dot" style="background:#D3FD7F"></span><span class="dot" style="background:#FEA1A9"></span><span class="dot" style="background:#1E2549"></span><span class="dot" style="background:#8DE5F2"></span><span class="dot" style="background:#262865"></span></div><button type="button" class="btn btn-k" data-model="m07">Ver colores y elegir</button></article>
-<article class="card"><div class="ph wide"><img src="img/catalogo/m08-1.webp" alt="Equipación de fútbol personalizada DA08: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m08-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA08<span class="ref">6 colores</span></h3><div class="meta"><span class="dot" style="background:#1B203F"></span><span class="dot" style="background:#FE9D9F"></span><span class="dot" style="background:#E9E6F9"></span><span class="dot" style="background:#FE6026"></span><span class="dot" style="background:#88E0CC"></span><span class="dot" style="background:#6BD8E4"></span></div><button type="button" class="btn btn-k" data-model="m08">Ver colores y elegir</button></article>
-<article class="card"><div class="ph wide"><img src="img/catalogo/m09-1.webp" alt="Equipación de fútbol personalizada DA09: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m09-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA09<span class="ref">6 colores</span></h3><div class="meta"><span class="dot" style="background:#E9E3F1"></span><span class="dot" style="background:#B7ECE2"></span><span class="dot" style="background:#C9E1F6"></span><span class="dot" style="background:#DC3524"></span><span class="dot" style="background:#F79D97"></span><span class="dot" style="background:#4044BA"></span></div><button type="button" class="btn btn-k" data-model="m09">Ver colores y elegir</button></article>
-<article class="card"><div class="ph wide"><img src="img/catalogo/m10-1.webp" alt="Equipación de fútbol personalizada DA10: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m10-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA10<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#CACBF6"></span><span class="dot" style="background:#94E3E6"></span><span class="dot" style="background:#35615A"></span><span class="dot" style="background:#EB3F3B"></span><span class="dot" style="background:#466DC3"></span></div><button type="button" class="btn btn-k" data-model="m10">Ver colores y elegir</button></article>
-<article class="card"><div class="ph wide"><img src="img/catalogo/m11-1.webp" alt="Equipación de fútbol personalizada DA11: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m11-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA11<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#CCBDDD"></span><span class="dot" style="background:#92D4C6"></span><span class="dot" style="background:#7AACE3"></span><span class="dot" style="background:#D20D0F"></span><span class="dot" style="background:#DCDCE4"></span></div><button type="button" class="btn btn-k" data-model="m11">Ver colores y elegir</button></article>
-<article class="card"><div class="ph wide"><img src="img/catalogo/m12-1.webp" alt="Equipación de fútbol personalizada DA12: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m12-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA12<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#4B3C7E"></span><span class="dot" style="background:#C9AF70"></span><span class="dot" style="background:#C81731"></span><span class="dot" style="background:#293455"></span><span class="dot" style="background:#DDDCE3"></span></div><button type="button" class="btn btn-k" data-model="m12">Ver colores y elegir</button></article>
-<article class="card"><div class="ph wide"><img src="img/catalogo/m13-1.webp" alt="Equipación de fútbol personalizada DA13: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m13-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA13<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#F7CFE6"></span><span class="dot" style="background:#BFF4EE"></span><span class="dot" style="background:#D73E3D"></span><span class="dot" style="background:#FA743B"></span><span class="dot" style="background:#F9E15F"></span></div><button type="button" class="btn btn-k" data-model="m13">Ver colores y elegir</button></article>
-<article class="card"><div class="ph wide"><img src="img/catalogo/m14-1.webp" alt="Equipación de fútbol personalizada DA14: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m14-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA14<span class="ref">4 colores</span></h3><div class="meta"><span class="dot" style="background:#E1E0E3"></span><span class="dot" style="background:#E4DB75"></span><span class="dot" style="background:#E11A2B"></span><span class="dot" style="background:#273AB2"></span></div><button type="button" class="btn btn-k" data-model="m14">Ver colores y elegir</button></article>
-<article class="card"><div class="ph wide"><img src="img/catalogo/m15-1.webp" alt="Equipación de fútbol personalizada DA15: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m15-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA15<span class="ref">2 colores</span></h3><div class="meta"><span class="dot" style="background:#9C7EC7"></span><span class="dot" style="background:#E8EBF7"></span></div><button type="button" class="btn btn-k" data-model="m15">Ver colores y elegir</button></article>
-<article class="card"><div class="ph wide"><img src="img/catalogo/m16-1.webp" alt="Equipación de fútbol personalizada DA16: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m16-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA16<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#7CE1C9"></span><span class="dot" style="background:#98CAF1"></span><span class="dot" style="background:#D0131F"></span><span class="dot" style="background:#DAE5F1"></span><span class="dot" style="background:#AEAFE8"></span></div><button type="button" class="btn btn-k" data-model="m16">Ver colores y elegir</button></article>
-<article class="card"><div class="ph wide"><img src="img/catalogo/m17-1.webp" alt="Equipación de fútbol personalizada DA17: camiseta y pantalón" width="960" height="720" loading="lazy"><img src="img/catalogo/m17-2.webp" alt="" width="960" height="720" loading="lazy"></div><h3>DA17<span class="ref">5 colores</span></h3><div class="meta"><span class="dot" style="background:#D7E0EC"></span><span class="dot" style="background:#1B2945"></span><span class="dot" style="background:#D9E1ED"></span><span class="dot" style="background:#DE2126"></span><span class="dot" style="background:#234DA7"></span></div><button type="button" class="btn btn-k" data-model="m17">Ver colores y elegir</button></article>
-      </div>
-    </div>
-  </section>
 
 
 
@@ -737,19 +782,126 @@ footer ul a:hover{color:#fff;text-decoration:underline}
 
   var CAT = window.__CATALOGO__ || [];
   function findModel(id){ for (var i=0;i<CAT.length;i++) if (CAT[i].id === id) return CAT[i]; return null; }
-  function renderCatalog(){
-    $("grid").innerHTML = CAT.map(function(m){
-      var c0 = m.colors[0], c1 = m.colors[1] || c0;
-      var dots = m.colors.slice(0,6).map(function(c){ return '<span class="dot" style="background:'+c.hex+'"></span>'; }).join("");
-      return '<article class="card"><div class="ph wide">'
-        + '<img src="'+c0.img+'" alt="Equipación de fútbol personalizada '+esc(m.name)+': camiseta y pantalón" width="960" height="720" loading="lazy">'
-        + '<img src="'+c1.img+'" alt="" width="960" height="720" loading="lazy"></div>'
-        + '<h3>'+esc(m.name)+'<span class="ref">'+m.colors.length+' colores</span></h3>'
-        + '<div class="meta">'+dots+(m.colors.length>6?'<span class="more-c">+'+(m.colors.length-6)+'</span>':'')+'</div>'
-        + ''
-        + '<button type="button" class="btn btn-k" data-model="'+m.id+'">Ver colores y elegir</button></article>';
-    }).join("");
+  // Buscador por colores. Las proporciones de cada foto salen de lib/colores.js
+  // (fotos-proveedor/build-colores.py); los id de FAMILIAS tienen que coincidir con los del script.
+  var COL = window.__COLORES__ || {};
+  var FAMILIAS = [
+    ["blanco","Blanco","#FFFFFF"],["negro","Negro","#111110"],["gris","Gris","#8E8E93"],
+    ["rojo","Rojo","#D0141C"],["granate","Granate","#7A1424"],["naranja","Naranja","#F55A14"],
+    ["amarillo","Amarillo","#F5D020"],["dorado","Dorado","#C9AF70"],["verde","Verde","#1E8A3C"],
+    ["fluor","Verde flúor","#CCFC7C"],["celeste","Celeste","#86D4F0"],["azul","Azul","#2D5EB8"],
+    ["marino","Azul marino","#1A203D"],["morado","Morado","#6A3D9A"],["rosa","Rosa","#F7A0B0"]
+  ];
+  var FNOMBRE = {}; FAMILIAS.forEach(function(f){ FNOMBRE[f[0]] = f[1]; });
+  // Colores parecidos cuentan a medias (un vivo granate vale si buscáis rojo)
+  var CERCA = {rojo:["granate","naranja"],granate:["rojo"],naranja:["rojo","amarillo"],amarillo:["dorado","naranja"],dorado:["amarillo"],
+    verde:["fluor"],fluor:["verde","amarillo"],celeste:["azul"],azul:["celeste","marino"],marino:["azul","negro"],negro:["marino","gris"],
+    gris:["blanco","negro"],blanco:["gris"],morado:["marino","rosa"],rosa:["rojo","morado"]};
+  // Mínimo para que un color cuente: blanco y gris salen un poco en todas por la etiqueta y las sombras
+  var MINIMO = {blanco:.06, gris:.08};
+  var MAX_ELEGIDOS = 3, picks = [], view = "modelos";
+
+  var VARIANTES = [];
+  CAT.forEach(function(m){ m.colors.forEach(function(c, i){
+    VARIANTES.push({m:m, i:i, c:c, sh:COL[m.id+"-"+(i+1)] || {}});
+  }); });
+  function presencia(sh, f){
+    var v = sh[f] || 0;
+    (CERCA[f] || []).forEach(function(n){ v += .35 * (sh[n] || 0); });
+    return v;
   }
+  function principales(sh){
+    return Object.keys(sh).filter(function(f){ return sh[f] >= Math.max(.08, MINIMO[f] || 0); })
+      .sort(function(a, b){ return sh[b] - sh[a]; }).slice(0, 3);
+  }
+  function puntuar(v){
+    var aciertos = 0, score = 0;
+    // Para contar como acierto el color tiene que estar de verdad; los parecidos solo suben la nota.
+    // La raíz premia que los colores elegidos estén repartidos y no uno solo con un detalle del otro.
+    picks.forEach(function(f, k){
+      if ((v.sh[f] || 0) >= (MINIMO[f] || .015)) aciertos++;
+      score += (k === 0 ? 1.2 : 1) * Math.sqrt(Math.min(presencia(v.sh, f), 1));
+    });
+    return {aciertos:aciertos, score:score};
+  }
+
+  function renderChips(){
+    $("chips").innerHTML = FAMILIAS.map(function(f){
+      var on = picks.indexOf(f[0]) >= 0;
+      return '<button type="button" class="chip" data-fam="'+f[0]+'" aria-pressed="'+on+'"'+(!on && picks.length >= MAX_ELEGIDOS ? ' disabled' : '')+'><i style="background:'+f[2]+'"></i>'+f[1]+'</button>';
+    }).join("") + (picks.length ? '<button type="button" class="chip clear" id="chips-clear">Quitar colores</button>' : '');
+  }
+  function cardModelo(m){
+    var c0 = m.colors[0], c1 = m.colors[1] || c0;
+    var dots = m.colors.slice(0,6).map(function(c){ return '<span class="dot" style="background:'+c.hex+'"></span>'; }).join("");
+    return '<article class="card"><div class="ph wide">'
+      + '<img src="'+c0.img+'" alt="Equipación de fútbol personalizada '+esc(m.name)+': camiseta y pantalón" width="960" height="720" loading="lazy">'
+      + '<img src="'+c1.img+'" alt="" width="960" height="720" loading="lazy"></div>'
+      + '<h3>'+esc(m.name)+'<span class="ref">'+m.colors.length+' colores</span></h3>'
+      + '<div class="meta">'+dots+(m.colors.length>6?'<span class="more-c">+'+(m.colors.length-6)+'</span>':'')+'</div>'
+      + '<button type="button" class="btn btn-k" data-model="'+m.id+'">Ver colores y elegir</button></article>';
+  }
+  function cardVariante(v){
+    var nombre = v.m.name+"-"+(v.i+1);
+    var tags = principales(v.sh).map(function(f){
+      return '<span'+(picks.indexOf(f) >= 0 ? ' class="hit"' : '')+'>'+esc(FNOMBRE[f])+'</span>';
+    }).join("");
+    return '<article class="card"><div class="ph wide">'
+      + '<img src="'+v.c.img+'" alt="Equipación de fútbol personalizada '+esc(nombre)+': camiseta y pantalón" width="960" height="720" loading="lazy"></div>'
+      + '<h3>'+esc(v.m.name)+'<span class="ref">Color '+(v.i+1)+'</span></h3>'
+      + '<div class="tags">'+tags+'</div>'
+      + '<button type="button" class="btn btn-k" data-model="'+v.m.id+'" data-color="'+v.i+'">Ver y elegir</button></article>';
+  }
+  function lista(L){
+    if (L.length === 1) return L[0];
+    return L.slice(0, -1).join(", ")+" y "+L[L.length-1];
+  }
+  function renderCatalog(){
+    var nm = $("nomatch"); if (nm) nm.remove();
+    document.querySelectorAll("#seg [data-view]").forEach(function(b){ b.setAttribute("aria-pressed", b.dataset.view === view); });
+    if (!picks.length){
+      if (view === "modelos"){
+        $("grid").innerHTML = CAT.map(cardModelo).join("");
+        $("v-count").textContent = CAT.length+" modelos";
+      } else {
+        $("grid").innerHTML = VARIANTES.map(cardVariante).join("");
+        $("v-count").textContent = VARIANTES.length+" equipaciones";
+      }
+      return;
+    }
+    var R = VARIANTES.map(function(v){ var p = puntuar(v); return {v:v, a:p.aciertos, s:p.score}; });
+    var todas = R.filter(function(r){ return r.a === picks.length; });
+    var nombres = lista(picks.map(function(f){ return FNOMBRE[f].toLowerCase(); }));
+    var sel;
+    if (todas.length){
+      sel = todas.sort(function(a, b){ return b.s - a.s; });
+      $("v-count").textContent = sel.length+(sel.length === 1 ? " equipación lleva " : " equipaciones llevan ")+nombres;
+    } else {
+      sel = R.filter(function(r){ return r.a > 0; }).sort(function(a, b){ return b.a - a.a || b.s - a.s; }).slice(0, 9);
+      $("v-count").textContent = "Las que más se acercan";
+      var aviso = document.createElement("p");
+      aviso.className = "nomatch"; aviso.id = "nomatch";
+      aviso.innerHTML = "Ningún modelo lleva "+esc(nombres)+" a la vez. Estas son las que más se acercan, o <a href=\"#a-medida\">la diseñamos a medida con vuestros colores</a>.";
+      $("grid").parentNode.insertBefore(aviso, $("grid"));
+    }
+    $("grid").innerHTML = sel.map(function(r){ return cardVariante(r.v); }).join("");
+  }
+  $("chips").addEventListener("click", function(e){
+    if (e.target.closest("#chips-clear")){ picks = []; view = "modelos"; renderChips(); renderCatalog(); return; }
+    var b = e.target.closest("[data-fam]"); if (!b || b.disabled) return;
+    var f = b.dataset.fam, k = picks.indexOf(f);
+    if (k >= 0) picks.splice(k, 1); else if (picks.length < MAX_ELEGIDOS) picks.push(f);
+    view = picks.length ? "colores" : view;
+    renderChips(); renderCatalog();
+  });
+  $("seg").addEventListener("click", function(e){
+    var b = e.target.closest("[data-view]"); if (!b) return;
+    view = b.dataset.view;
+    if (view === "modelos" && picks.length){ picks = []; renderChips(); }
+    renderCatalog();
+  });
+  renderChips();
+
   var modalModel = null, modalColor = 0;
   function renderModal(){
     var m = modalModel, c = m.colors[modalColor];
@@ -760,9 +912,10 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       return '<button type="button" role="radio" aria-checked="'+(i===modalColor)+'" aria-label="Color '+(i+1)+'" data-color-i="'+i+'" style="background:'+cc.hex+'"></button>';
     }).join("");
   }
-  function openModel(ref){
+  function openModel(ref, color){
     modalModel = findModel(ref); if (!modalModel) return;
-    modalColor = state.model && state.model.id === ref ? state.model.color : 0;
+    modalColor = color != null && color !== "" ? Math.min(+color, modalModel.colors.length - 1)
+      : (state.model && state.model.id === ref ? state.model.color : 0);
     renderModal();
     var d = $("modal"); if (d.showModal) d.showModal(); else d.setAttribute("open", "");
   }
@@ -779,7 +932,7 @@ footer ul a:hover{color:#fff;text-decoration:underline}
   });
   document.addEventListener("click", function(e){
     var m = e.target.closest("[data-model]");
-    if (m){ e.preventDefault(); openModel(m.dataset.model); }
+    if (m){ e.preventDefault(); openModel(m.dataset.model, m.dataset.color); }
   });
   renderCatalog();
 
