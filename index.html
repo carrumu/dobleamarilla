@@ -208,7 +208,16 @@ footer .logo img{height:34px}
 .m-close svg{width:20px;height:20px}
 .m-photo{background:#fff;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--line)}
 @media(min-width:820px){.m-photo{border-bottom:0;border-right:1px solid var(--line)}}
+.m-photo{position:relative}
 .m-photo img{width:100%;height:auto}
+.m-photo img.m-amb{max-height:min(72vh,640px);width:auto;max-width:100%;object-fit:contain}
+.m-views{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:inline-flex;padding:4px;border-radius:999px;background:rgba(255,255,255,.94);box-shadow:0 2px 10px rgba(0,0,0,.16)}
+.m-views button{min-height:34px;padding:0 14px;border:0;border-radius:999px;background:transparent;font-size:13px;font-weight:700;color:var(--mute);cursor:pointer}
+.m-views button[aria-pressed="true"]{background:var(--negro);color:#fff}
+.card .puesta{position:absolute;left:8px;top:8px;z-index:1;padding:4px 9px;border-radius:999px;background:rgba(255,255,255,.94);font-size:12px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.12);transition:opacity .2s ease}
+@media(hover:hover){.card:hover .puesta{opacity:0}}
+@media(hover:none){.card .puesta{display:none}}
+.card .ph.wide img[src*="img/ambiente/"]{object-fit:cover;object-position:center 5%}
 .m-info{padding:22px}
 @media(min-width:820px){.m-info{padding:32px 28px}}
 .m-ref{margin:0;font-size:13px;color:var(--mute);font-weight:600;letter-spacing:.04em}
@@ -544,7 +553,7 @@ footer ul a:hover{color:#fff;text-decoration:underline}
           <!-- Imagen de ambiente hecha con IA sobre el modelo real DA12-4. No usar como foto de cliente -->
           <figure class="hs-photo">
             <img src="img/ambiente/da12-4-jugador-1100.webp" srcset="img/ambiente/da12-4-jugador-640.webp 640w, img/ambiente/da12-4-jugador-1100.webp 1100w" sizes="(min-width:900px) 34vw, 56vw" alt="Jugador en una pista de fútbol 7 con la equipación DA12-4, azul marino con rayos celestes" width="1100" height="1375" fetchpriority="high">
-            <button type="button" class="hs-tag" data-model="m12" data-color="3">DA12-4 <span>Ver modelo ›</span></button>
+            <button type="button" class="hs-tag" data-model="m12" data-color="3" data-puesta>DA12-4 <span>Ver modelo ›</span></button>
           </figure>
           <img src="img/catalogo/m12-4.webp" alt="" aria-hidden="true" width="960" height="720">
           <img src="img/catalogo/m07-2.webp" alt="" aria-hidden="true" width="960" height="720">
@@ -840,12 +849,19 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       return '<button type="button" class="chip" data-fam="'+f[0]+'" aria-pressed="'+on+'"'+(!on && picks.length >= MAX_ELEGIDOS ? ' disabled' : '')+'><i style="background:'+f[2]+'"></i>'+f[1]+'</button>';
     }).join("") + (picks.length ? '<button type="button" class="chip clear" id="chips-clear">Quitar colores</button>' : '');
   }
+  // Fotos "puestas": imágenes de ambiente hechas con IA sobre el modelo real, revisadas una a una.
+  // Clave = modelo-color (1 = primer color). Archivos en img/ambiente/. Nunca como foto de cliente.
+  var AMBIENTE = {"m12-4":"da12-4", "m04-5":"da04-5", "m02-4":"da02-4", "m13-5":"da13-5"};
+  function amb(mid, i, w){ var k = AMBIENTE[mid+"-"+(i+1)]; return k ? "img/ambiente/"+k+"-jugador-"+(w||640)+".webp" : ""; }
+  function ambModelo(m){ for (var i=0;i<m.colors.length;i++) if (amb(m.id, i)) return i; return -1; }
   function cardModelo(m){
-    var c0 = m.colors[0], c1 = m.colors[1] || c0;
+    var ia = ambModelo(m);
+    var c0 = m.colors[0], c1 = ia >= 0 ? {img:amb(m.id, ia)} : (m.colors[1] || c0);
     var dots = m.colors.slice(0,6).map(function(c){ return '<span class="dot" style="background:'+c.hex+'"></span>'; }).join("");
     return '<article class="card"><div class="ph wide">'
       + '<img src="'+c0.img+'" alt="Equipación de fútbol personalizada '+esc(m.name)+': camiseta y pantalón" width="960" height="720" loading="lazy">'
-      + '<img src="'+c1.img+'" alt="" width="960" height="720" loading="lazy"></div>'
+      + '<img src="'+c1.img+'" alt="" width="960" height="720" loading="lazy">'
+      + (ia >= 0 ? '<span class="puesta">Ver puesta</span>' : '')+'</div>'
       + '<h3>'+esc(m.name)+'<span class="ref">'+m.colors.length+' colores</span></h3>'
       + '<div class="meta">'+dots+(m.colors.length>6?'<span class="more-c">+'+(m.colors.length-6)+'</span>':'')+'</div>'
       + '<button type="button" class="btn btn-k" data-model="'+m.id+'">Ver colores y elegir</button></article>';
@@ -856,7 +872,8 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       return '<span'+(picks.indexOf(f) >= 0 ? ' class="hit"' : '')+'>'+esc(FNOMBRE[f])+'</span>';
     }).join("");
     return '<article class="card"><div class="ph wide">'
-      + '<img src="'+v.c.img+'" alt="Equipación de fútbol personalizada '+esc(nombre)+': camiseta y pantalón" width="960" height="720" loading="lazy"></div>'
+      + '<img src="'+v.c.img+'" alt="Equipación de fútbol personalizada '+esc(nombre)+': camiseta y pantalón" width="960" height="720" loading="lazy">'
+      + (amb(v.m.id, v.i) ? '<img src="'+amb(v.m.id, v.i)+'" alt="" width="640" height="800" loading="lazy"><span class="puesta">Ver puesta</span>' : '')+'</div>'
       + '<h3>'+esc(v.m.name)+'<span class="ref">Color '+(v.i+1)+'</span></h3>'
       + '<div class="tags">'+tags+'</div>'
       + '<button type="button" class="btn btn-k" data-model="'+v.m.id+'" data-color="'+v.i+'">Ver y elegir</button></article>';
@@ -911,20 +928,30 @@ footer ul a:hover{color:#fff;text-decoration:underline}
   });
   renderChips();
 
-  var modalModel = null, modalColor = 0;
+  var modalModel = null, modalColor = 0, modalPuesta = false;
   function renderModal(){
     var m = modalModel, c = m.colors[modalColor];
     $("m-ref").textContent = m.colors.length+" colores"; $("m-name").textContent = m.name;
-    $("m-photo").innerHTML = '<img src="'+c.img+'" alt="'+esc(m.name)+', color '+(modalColor+1)+'" width="960" height="720">';
+    var a = amb(m.id, modalColor, 1100);
+    if (!a) modalPuesta = false;
+    $("m-photo").innerHTML = (modalPuesta
+        ? '<img src="'+a+'" alt="Jugador con la equipación '+esc(m.name)+'-'+(modalColor+1)+'" width="1100" height="1375" class="m-amb">'
+        : '<img src="'+c.img+'" alt="'+esc(m.name)+', color '+(modalColor+1)+'" width="960" height="720">')
+      + (a ? '<div class="m-views" role="group" aria-label="Foto"><button type="button" data-mview="0" aria-pressed="'+!modalPuesta+'">Modelo</button><button type="button" data-mview="1" aria-pressed="'+modalPuesta+'">Puesta</button></div>' : '');
+    var hint = document.querySelector("#modal .hint");
+    if (hint) hint.textContent = modalPuesta
+      ? "Imagen de ambiente creada con IA a partir del modelo real. Escudo, patrocinador, nombre y dorsal se añaden en tu pedido."
+      : "Foto del modelo en blanco. Escudo, patrocinador, nombre y dorsal se añaden en tu pedido.";
     $("m-col").textContent = m.name+"-"+(modalColor+1);
     $("m-sw").innerHTML = m.colors.map(function(cc, i){
       return '<button type="button" role="radio" aria-checked="'+(i===modalColor)+'" aria-label="Color '+(i+1)+'" data-color-i="'+i+'" style="background:'+cc.hex+'"></button>';
     }).join("");
   }
-  function openModel(ref, color){
+  function openModel(ref, color, puesta){
     modalModel = findModel(ref); if (!modalModel) return;
     modalColor = color != null && color !== "" ? Math.min(+color, modalModel.colors.length - 1)
       : (state.model && state.model.id === ref ? state.model.color : 0);
+    modalPuesta = !!puesta;
     renderModal();
     var d = $("modal"); if (d.showModal) d.showModal(); else d.setAttribute("open", "");
   }
@@ -932,6 +959,7 @@ footer ul a:hover{color:#fff;text-decoration:underline}
   $("m-close").addEventListener("click", closeModal);
   $("modal").addEventListener("click", function(e){ if (e.target === this) closeModal(); });
   $("m-sw").addEventListener("click", function(e){ var b = e.target.closest("[data-color-i]"); if (b){ modalColor = +b.dataset.colorI; renderModal(); } });
+  $("m-photo").addEventListener("click", function(e){ var b = e.target.closest("[data-mview]"); if (b){ modalPuesta = b.dataset.mview === "1"; renderModal(); } });
   $("m-choose").addEventListener("click", function(){
     var m = modalModel, c = m.colors[modalColor];
     state.model = {id:m.id, name:m.name, color:modalColor, count:m.colors.length, img:c.img, hex:c.hex};
@@ -941,7 +969,7 @@ footer ul a:hover{color:#fff;text-decoration:underline}
   });
   document.addEventListener("click", function(e){
     var m = e.target.closest("[data-model]");
-    if (m){ e.preventDefault(); openModel(m.dataset.model, m.dataset.color); }
+    if (m){ e.preventDefault(); openModel(m.dataset.model, m.dataset.color, m.hasAttribute("data-puesta")); }
   });
   renderCatalog();
 
