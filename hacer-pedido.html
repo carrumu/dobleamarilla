@@ -204,6 +204,16 @@ footer .logo img{height:34px}
 .pick .mini{width:120px;height:90px;display:flex;align-items:center;justify-content:center;background:var(--card);border-radius:10px}
 .pick .mini svg{height:78px;width:auto}
 .pick-empty{text-align:center;padding:8px 0}
+.marcaje{display:grid;gap:14px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+@media(min-width:560px){.marcaje{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:center}}
+.mk-views{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mk-views figure{margin:0;background:var(--card);border-radius:10px;padding:8px 6px 4px;text-align:center}
+.mk-views svg{width:100%;height:auto}
+.mk-views figcaption{font-size:12px;font-weight:600;color:var(--mute)}
+.mk-t{margin:0 0 6px;font-weight:700;font-size:15px}
+.mk-list{list-style:none;margin:0 0 8px;padding:0;font-size:13px;line-height:1.45;display:grid;gap:3px}
+.mk-list b{font-weight:700}
+.mk-note{margin:0;font-size:12px;color:var(--mute)}
 .pick-empty p{margin:0 0 12px;color:var(--mute)}
 .pick-empty .ctas{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .panel-foot{border-top:1px solid var(--line);margin-top:22px;padding-top:18px}
@@ -472,17 +482,17 @@ footer ul a:hover{color:#fff;text-decoration:underline}
               <div class="up" data-up="crest">
                 <input type="file" id="up-crest" accept="image/png,image/jpeg,image/webp,application/pdf" hidden>
                 <label for="up-crest" class="up-box"><b>Subir escudo</b><span class="up-hint"></span></label>
-                <div class="up-done" hidden><span class="up-thumb" aria-hidden="true"></span><span class="up-name"></span><button type="button" class="del" data-clear="crest">Quitar</button></div>
+                <div class="up-done" hidden><span class="up-thumb" aria-hidden="true"></span><span class="up-name"></span><button type="button" class="del" data-fondo="crest" hidden></button><button type="button" class="del" data-clear="crest">Quitar</button></div>
                 <p class="up-msg" aria-live="polite"></p>
               </div>
               <div class="up" data-up="sponsor">
                 <input type="file" id="up-sponsor" accept="image/png,image/jpeg,image/webp,application/pdf" hidden>
                 <label for="up-sponsor" class="up-box"><b>Subir logo del patrocinador</b><span class="up-hint"></span></label>
-                <div class="up-done" hidden><span class="up-thumb" aria-hidden="true"></span><span class="up-name"></span><button type="button" class="del" data-clear="sponsor">Quitar</button></div>
+                <div class="up-done" hidden><span class="up-thumb" aria-hidden="true"></span><span class="up-name"></span><button type="button" class="del" data-fondo="sponsor" hidden></button><button type="button" class="del" data-clear="sponsor">Quitar</button></div>
                 <p class="up-msg" aria-live="polite"></p>
               </div>
             </div>
-            <p class="hint">Escudo, patrocinador, nombre y dorsal van incluidos en el precio. Si no tienes los logos a mano, nos los mandas luego por WhatsApp.</p>
+            <p class="hint">Sube el escudo como lo tengáis: recortamos los márgenes y, si tiene fondo liso, lo quitamos para la vista previa. Va en el pecho izquierdo a unos 8 cm, y el patrocinador en el centro. A la fábrica le llega vuestro archivo original. Si no los tienes a mano, nos los mandas luego por WhatsApp.</p>
           </div>
           <h3 class="box-t"><span>2</span>Plantilla</h3>
           <div class="roster-head" aria-hidden="true"><span>#</span><span>Nombre en la espalda</span><span>Dorsal</span><span>Talla</span><span>Pieza</span><span></span></div>
@@ -740,6 +750,30 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       + '<path d="'+COLLAR+'" fill="'+(s.c3||s.c2)+'"/>'
       + '<path d="'+CUFFS+'" fill="'+(s.c3||s.c2)+'"/>';
   }
+  // ---------- Marcaje estándar ----------
+  // Todos los pedidos igual: escudo en el pecho izquierdo del jugador (a la derecha en la vista de frente),
+  // logo de Doble Amarilla en el pecho derecho y patrocinador en el centro. Decisión de marca 2026-11-13.
+  var MARCAJE = [
+    ["Escudo", "pecho izquierdo, unos 8 cm"],
+    ["Logo Doble Amarilla", "pecho derecho, 5 cm, en un color"],
+    ["Patrocinador", "centro del pecho, hasta 26 × 9 cm"],
+    ["Nombre", "espalda, arriba, letras de 7 cm"],
+    ["Dorsal", "espalda, 25 cm"]
+  ];
+  // Cajas de la vista plana: centro, ancho y alto máximos y "lado equivalente" (el tamaño visual que se busca).
+  // Así un escudo ancho, uno alto y uno redondo se ven del mismo tamaño, y nada se sale de su sitio.
+  var FLAT = {
+    crest:{cx:184, cy:88, maxW:31, maxH:33, side:28},
+    da:{cx:116, cy:88, w:17},
+    sponsor:{cx:150, cy:130, maxW:88, maxH:31, side:50}, sponsorY:138, teamY:136
+  };
+  function fitLogo(ar, b){
+    ar = ar > 0 ? ar : 1;
+    var h = b.side / Math.sqrt(ar), w = h * ar;
+    if (w > b.maxW){ w = b.maxW; h = w / ar; }
+    if (h > b.maxH){ h = b.maxH; w = h * ar; }
+    return [b.cx - w/2, b.cy - h/2, w, h];
+  }
   function shirt(s, side, opts){
     opts = opts || {};
     var id = "cl"+(++uid), ink = inkFor(s);
@@ -754,14 +788,17 @@ footer ul a:hover{color:#fff;text-decoration:underline}
     if (side === "front") {
       var team = (opts.team != null ? opts.team : s.team) || "";
       var sponsor = (opts.sponsor != null ? opts.sponsor : s.sponsor) || "";
-      if (s.crest && s.crest.thumb) out += '<image href="'+s.crest.thumb+'" x="174" y="58" width="40" height="40" preserveAspectRatio="xMidYMid meet"/>';
-      else out += '<g transform="translate(176 60)"><circle cx="18" cy="18" r="17" fill="none" stroke="'+ink+'" stroke-width="2" stroke-dasharray="4 3"/>'
-        + '<text x="18" y="21" font-family="JetBrains Mono, monospace" font-size="7" font-weight="700" text-anchor="middle" fill="'+ink+'">ESCUDO</text></g>';
-      out += '<g transform="translate(30 84) rotate(-28) scale(.12)" style="--c1:'+ink+';--c2:'+ink+'" opacity=".9"><use href="#da" width="136" height="142"/></g>';
-      // Con patrocinador, el pecho es suyo; sin él, va el nombre del equipo
-      if (s.sponsorLogo && s.sponsorLogo.thumb) out += '<image href="'+s.sponsorLogo.thumb+'" x="86" y="150" width="128" height="56" preserveAspectRatio="xMidYMid meet"/>';
-      else if (sponsor) out += '<text x="150" y="190" '+tf+' font-size="'+(sponsor.length>14?24:sponsor.length>9?30:38)+'" letter-spacing=".5">'+esc(sponsor.toUpperCase())+'</text>';
-      else if (team) out += '<text x="150" y="200" '+tf+' font-size="'+(team.length>16?18:24)+'" letter-spacing=".5">'+esc(team.toUpperCase())+'</text>';
+      var cb = FLAT.crest, r;
+      if (s.crest && s.crest.thumb){ r = fitLogo(s.crest.ar, cb); out += '<image href="'+s.crest.thumb+'" x="'+r[0]+'" y="'+r[1]+'" width="'+r[2]+'" height="'+r[3]+'" preserveAspectRatio="xMidYMid meet"/>'; }
+      else out += '<circle cx="'+cb.cx+'" cy="'+cb.cy+'" r="12" fill="none" stroke="'+ink+'" stroke-width="1.2" stroke-dasharray="3 2.4"/>'
+        + '<text x="'+cb.cx+'" y="'+(cb.cy+2)+'" font-family="JetBrains Mono, monospace" font-size="4.6" font-weight="700" text-anchor="middle" fill="'+ink+'">ESCUDO</text>';
+      // Logo de Doble Amarilla en el pecho derecho, en un solo color
+      var da = FLAT.da, dk = da.w / 136;
+      out += '<g transform="translate('+(da.cx - 68*dk)+' '+(da.cy - 71*dk)+') scale('+dk+')" style="--c1:'+ink+';--c2:'+ink+'"><use href="#da" width="136" height="142"/></g>';
+      // Con patrocinador, el centro del pecho es suyo; sin él, va el nombre del equipo
+      if (s.sponsorLogo && s.sponsorLogo.thumb){ r = fitLogo(s.sponsorLogo.ar, FLAT.sponsor); out += '<image href="'+s.sponsorLogo.thumb+'" x="'+r[0]+'" y="'+r[1]+'" width="'+r[2]+'" height="'+r[3]+'" preserveAspectRatio="xMidYMid meet"/>'; }
+      else if (sponsor) out += '<text x="150" y="'+FLAT.sponsorY+'" '+tf+' font-size="'+(sponsor.length>14?16:sponsor.length>9?20:24)+'" letter-spacing=".5">'+esc(sponsor.toUpperCase())+'</text>';
+      else if (team) out += '<text x="150" y="'+FLAT.teamY+'" '+tf+' font-size="'+(team.length>16?12:15)+'" letter-spacing=".5">'+esc(team.toUpperCase())+'</text>';
     } else {
       out += '<text x="150" y="96" '+tf+' font-size="'+(name.length>9?22:28)+'" letter-spacing="1">'+esc(name.toUpperCase())+'</text>';
       out += '<text x="150" y="232" '+tf+' font-size="128">'+esc(num)+'</text>';
@@ -782,13 +819,15 @@ footer ul a:hover{color:#fff;text-decoration:underline}
   var GLTF_URL = "https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js";
   var MODEL_URL = "models/jersey.glb", MASK_URL = "models/trim-mask.png";
 
-  // Dónde va cada cosa, en coordenadas de cada vista (300 de ancho)
+  // Dónde va cada cosa, en coordenadas de cada vista (300 de ancho). Tamaños reales de una talla M
+  // (en la vista plana, 1 cm = 3,36 px). Ver MARCAJE: lo mismo que se le pide a la fábrica.
   var LAYOUTS = {
     model: {w:300, h:380, clip:false,
-      crest:[176,62,38,38], sleeve:[30,122], sponsor:[85,128,130,52], sponsorY:168, teamY:172,
+      crest:{cx:186, cy:90, maxW:31, maxH:33, side:28}, da:{cx:114, cy:90, w:17},
+      sponsor:{cx:150, cy:128, maxW:88, maxH:31, side:50}, sponsorY:136, teamY:134,
       nameY:82, numY:240, numPx:132},
     flat: {w:300, h:320, clip:true,
-      crest:[174,58,40,40], sleeve:[38,98], sponsor:[86,150,128,56], sponsorY:190, teamY:200,
+      crest:FLAT.crest, da:FLAT.da, sponsor:FLAT.sponsor, sponsorY:FLAT.sponsorY, teamY:FLAT.teamY,
       nameY:96, numY:232, numPx:128}
   };
 
@@ -998,26 +1037,25 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       function finish(){ if (!pending && seq === paintSeq[side]){ g.setTransform(1,0,0,1,0,0); done(); } }
       function logo(src, box){
         pending++; var im = new Image();
-        im.onload = function(){ if (seq === paintSeq[side]){ g.setTransform(K,0,0,K,0,0); var k=Math.min(box[2]/im.width, box[3]/im.height), dw=im.width*k, dh=im.height*k; g.drawImage(im, box[0]+(box[2]-dw)/2, box[1]+(box[3]-dh)/2, dw, dh); } pending--; finish(); };
+        im.onload = function(){ if (seq === paintSeq[side]){ g.setTransform(K,0,0,K,0,0); var r = fitLogo(im.width/im.height, box); g.drawImage(im, r[0], r[1], r[2], r[3]); } pending--; finish(); };
         im.onerror = function(){ pending--; finish(); };
         im.src = src;
       }
       if (side === "front"){
-        // Las dos tarjetas en la manga: la segunda con un filete del color de la tela, que hace de hueco
-        g.save(); g.translate(L.sleeve[0], L.sleeve[1]); g.rotate(-28*Math.PI/180); g.scale(.7,.7);
-        function card(x, y, a, fill, edge){ g.save(); g.rotate(a*Math.PI/180); g.beginPath(); if (g.roundRect) g.roundRect(x,y,10,14,1.3); else g.rect(x,y,10,14);
-          if (edge){ g.lineWidth = 1.6; g.strokeStyle = edge; g.stroke(); } g.fillStyle = fill; g.fill(); g.restore(); }
-        card(-7,-7,-8, ink); card(-2,-8,10, ink, state.c1);
+        // Logo de Doble Amarilla en el pecho derecho: las dos tarjetas, la segunda con un filete del color de la tela que hace de hueco
+        g.save(); g.translate(L.da.cx, L.da.cy); g.scale(L.da.w/12, L.da.w/12);
+        function card(x, y, a, fill, edge){ g.save(); g.rotate(a*Math.PI/180); g.beginPath(); if (g.roundRect) g.roundRect(x,y,7,10,1); else g.rect(x,y,7,10);
+          if (edge){ g.lineWidth = 1.1; g.strokeStyle = edge; g.stroke(); } g.fillStyle = fill; g.fill(); g.restore(); }
+        card(-6,-5,-8, ink); card(-1.5,-6,10, ink, state.c1);
         g.restore();
         var cr = L.crest;
         if (state.crest && state.crest.thumb) logo(state.crest.thumb, cr);
-        else { var cx = cr[0]+cr[2]/2, cy = cr[1]+cr[3]/2;
-               g.save(); g.strokeStyle = ink; g.lineWidth = 1.6; g.setLineDash([4,3]); g.beginPath(); g.arc(cx, cy, cr[2]/2-2, 0, 2*Math.PI); g.stroke(); g.restore();
-               g.font = "700 7px 'JetBrains Mono', monospace"; g.fillStyle = ink; g.textAlign = "center"; g.fillText("ESCUDO", cx, cy+3); }
+        else { g.save(); g.strokeStyle = ink; g.lineWidth = 1.2; g.setLineDash([3,2.4]); g.beginPath(); g.arc(cr.cx, cr.cy, 12, 0, 2*Math.PI); g.stroke(); g.restore();
+               g.font = "700 4.6px 'JetBrains Mono', monospace"; g.fillStyle = ink; g.textAlign = "center"; g.fillText("ESCUDO", cr.cx, cr.cy+2); }
         var sp = state.sponsor.trim(), tm = state.team.trim();
         if (state.sponsorLogo && state.sponsorLogo.thumb) logo(state.sponsorLogo.thumb, L.sponsor);
-        else if (sp) text(sp.toUpperCase(), 150, L.sponsorY, sp.length>14?24:sp.length>9?30:38, .5);
-        else if (tm) text(tm.toUpperCase(), 150, L.teamY, tm.length>16?18:24, .5);
+        else if (sp) text(sp.toUpperCase(), 150, L.sponsorY, sp.length>14?16:sp.length>9?20:24, .5);
+        else if (tm) text(tm.toUpperCase(), 150, L.teamY, tm.length>16?12:15, .5);
       } else {
         var nm = (firstName() || "PEPE").toUpperCase(), nu = firstNum() || "7";
         text(nm, 150, L.nameY, nm.length>9?22:28, 1);
@@ -1115,6 +1153,7 @@ footer ul a:hover{color:#fff;text-decoration:underline}
   $("team").addEventListener("input", function(){ state.team = this.value; showSide("front"); renderStage(); renderSummary(); save(); });
   $("sponsor").value = state.sponsor;
   $("sponsor").addEventListener("input", function(){ state.sponsor = this.value; showSide("front"); renderStage(); renderSummary(); save(); });
+  $("sponsor").addEventListener("change", renderPick); $("team").addEventListener("change", renderPick);
   $("idea").value = state.idea;
   $("idea").addEventListener("input", function(){ state.idea = this.value; save(); });
 
@@ -1129,6 +1168,54 @@ footer ul a:hover{color:#fff;text-decoration:underline}
     c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
     return c;
   }
+  // Escudo y logos: cada uno los sube a su manera (con márgenes, con fondo blanco, enormes o diminutos).
+  // Para la vista previa se recortan los márgenes y, si el fondo es liso, se quita (solo el que toca los bordes,
+  // nunca el blanco de dentro del escudo). A la fábrica le llega el archivo original, sin tocar.
+  function procesarLogo(img){
+    var c = drawTo(img, 600), g = c.getContext("2d"), W = c.width, H = c.height;
+    var data = g.getImageData(0, 0, W, H), a = data.data, orig = new Uint8ClampedArray(a);
+    var dist = function(i, q){ return Math.abs(a[i]-q[0]) + Math.abs(a[i+1]-q[1]) + Math.abs(a[i+2]-q[2]); };
+    var esq = [0, W-1, (H-1)*W, H*W-1].map(function(i){ return [a[i*4], a[i*4+1], a[i*4+2], a[i*4+3]]; });
+    var sinFondo = false;
+    var liso = esq.every(function(p){ return p[3] > 250 && Math.abs(p[0]-esq[0][0]) + Math.abs(p[1]-esq[0][1]) + Math.abs(p[2]-esq[0][2]) < 45; });
+    if (liso){
+      var bg = esq[0], seen = new Uint8Array(W*H), st = [], quitados = 0, x, y;
+      for (x=0;x<W;x++){ st.push(x, (H-1)*W+x); } for (y=0;y<H;y++){ st.push(y*W, y*W+W-1); }
+      while (st.length){
+        var i = st.pop(); if (seen[i]) continue; seen[i] = 1;
+        if (dist(i*4, bg) > 70) continue;
+        a[i*4+3] = 0; quitados++;
+        x = i % W; y = (i - x) / W;
+        if (x > 0) st.push(i-1); if (x < W-1) st.push(i+1); if (y > 0) st.push(i-W); if (y < H-1) st.push(i+W);
+      }
+      sinFondo = quitados > W*H*0.03 && quitados < W*H*0.97;
+      if (!sinFondo) a.set(orig);
+    }
+    // Recorte de márgenes (transparentes, o del color del fondo si no se ha quitado)
+    var x0 = W, y0 = H, x1 = -1, y1 = -1, k, vacio;
+    for (y=0;y<H;y++) for (x=0;x<W;x++){
+      k = (y*W+x)*4;
+      vacio = a[k+3] < 24 || (liso && !sinFondo && dist(k, esq[0]) < 30);
+      if (!vacio){ if (x<x0) x0=x; if (x>x1) x1=x; if (y<y0) y0=y; if (y>y1) y1=y; }
+    }
+    if (x1 < 0){ x0 = 0; y0 = 0; x1 = W-1; y1 = H-1; }
+    var pad = Math.round(Math.max(x1-x0, y1-y0) * 0.02);
+    x0 = Math.max(0, x0-pad); y0 = Math.max(0, y0-pad); x1 = Math.min(W-1, x1+pad); y1 = Math.min(H-1, y1+pad);
+    var cw = x1-x0+1, ch = y1-y0+1;
+    function recorte(px){
+      var t = document.createElement("canvas"), kk = Math.min(1, 400/Math.max(cw, ch));
+      t.width = Math.max(1, Math.round(cw*kk)); t.height = Math.max(1, Math.round(ch*kk));
+      var s2 = document.createElement("canvas"); s2.width = W; s2.height = H;
+      s2.getContext("2d").putImageData(new ImageData(px, W, H), 0, 0);
+      t.getContext("2d").drawImage(s2, x0, y0, cw, ch, 0, 0, t.width, t.height);
+      return t.toDataURL("image/png");
+    }
+    var escala = Math.max(img.naturalWidth, img.naturalHeight) / Math.max(W, H);
+    return {
+      thumb: recorte(a), conFondo: sinFondo ? recorte(orig) : "", sinFondo: sinFondo,
+      ar: cw / ch, px: Math.round(Math.max(cw, ch) * escala)
+    };
+  }
   // Las imágenes grandes se reducen a 2400 px y se pasan a WebP antes de subir; los PDF van tal cual
   function prepareFile(file){
     return new Promise(function(res, rej){
@@ -1137,13 +1224,14 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       if (file.size > 25*1048576) return rej("La imagen pesa "+mb(file.size)+". Usa una de menos de 25 MB.");
       var url = URL.createObjectURL(file), img = new Image();
       img.onload = function(){
-        var thumb = ""; try { thumb = drawTo(img, 320).toDataURL("image/png"); } catch(e) {}
-        if (file.size <= 1.5*1048576 && Math.max(img.naturalWidth, img.naturalHeight) <= 2400){ URL.revokeObjectURL(url); return res({blob:file, thumb:thumb}); }
+        var vista = {thumb:""}; try { vista = procesarLogo(img); } catch(e) { try { vista = {thumb:drawTo(img, 320).toDataURL("image/png"), ar:img.naturalWidth/img.naturalHeight, px:Math.max(img.naturalWidth, img.naturalHeight)}; } catch(e2) {} }
+        var thumb = vista.thumb;
+        if (file.size <= 1.5*1048576 && Math.max(img.naturalWidth, img.naturalHeight) <= 2400){ URL.revokeObjectURL(url); return res({blob:file, thumb:thumb, vista:vista}); }
         drawTo(img, 2400).toBlob(function(b){
           URL.revokeObjectURL(url);
           if (!b) return rej("No se ha podido preparar la imagen.");
           if (b.size > MAX_B) return rej("Aun reducida pesa "+mb(b.size)+". Máximo "+MAX_MB+" MB.");
-          res({blob:b, thumb:thumb});
+          res({blob:b, thumb:thumb, vista:vista});
         }, "image/webp", 0.92);
       };
       img.onerror = function(){ URL.revokeObjectURL(url); rej("No se puede leer la imagen."); };
@@ -1183,6 +1271,9 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       th.style.backgroundImage = f.thumb ? "url("+f.thumb+")" : "";
       th.textContent = f.thumb ? "" : "PDF";
       el.querySelector(".up-name").textContent = f.name;
+      var fb = el.querySelector("[data-fondo]");
+      fb.hidden = !f.otro;
+      fb.textContent = f.sinFondo ? "Dejar el fondo" : "Quitar el fondo";
     }
   }
   function handleFile(key, file){
@@ -1193,9 +1284,13 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       msg.textContent = "Subiendo...";
       return sendFile(p.blob, function(r){ msg.textContent = "Subiendo "+Math.round(r*100)+" %"; }).then(function(ruta){ return {ruta:ruta, p:p}; });
     }).then(function(r){
-      state[UPKEY[key]] = {ruta:r.ruta, name:file.name, thumb:r.p.thumb};
-      msg.textContent = r.ruta ? "Subido. Va con el pedido." : "Guardado para la vista previa. Mándanoslo luego por WhatsApp.";
-      renderUp(key); renderStage(); save();
+      var v = r.p.vista || {};
+      state[UPKEY[key]] = {ruta:r.ruta, name:file.name, thumb:r.p.thumb, ar:v.ar || 1, px:v.px || 0,
+        sinFondo:!!v.sinFondo, otro:v.conFondo || "", pdf:file.type === "application/pdf"};
+      msg.textContent = (r.ruta ? "Subido. Va con el pedido." : "Guardado para la vista previa. Mándanoslo luego por WhatsApp.")
+        + (file.type === "application/pdf" ? " Del PDF no podemos hacer la vista previa, pero a la fábrica le llega perfecto."
+          : v.px && v.px < 500 ? " Ojo: es pequeño ("+v.px+" px) y puede salir borroso. Si tenéis uno más grande o en PDF, mejor." : "");
+      renderUp(key); renderStage(); renderPick(); save();
     }, function(err){
       msg.className = "up-msg err"; msg.textContent = typeof err === "string" ? err : "No se ha podido subir. Mándalo luego por WhatsApp.";
     }).then(function(){ el.classList.remove("busy"); });
@@ -1209,10 +1304,17 @@ footer ul a:hover{color:#fff;text-decoration:underline}
     renderUp(key);
   });
   document.addEventListener("click", function(e){
+    var fb = e.target.closest("[data-fondo]");
+    if (fb){
+      var f = state[UPKEY[fb.dataset.fondo]]; if (!f || !f.otro) return;
+      var t = f.thumb; f.thumb = f.otro; f.otro = t; f.sinFondo = !f.sinFondo;
+      var im = new Image(); im.onload = function(){ f.ar = im.width / im.height; renderUp(fb.dataset.fondo); renderStage(); renderPick(); save(); }; im.src = f.thumb;
+      return;
+    }
     var c = e.target.closest("[data-clear]"); if (!c) return;
     state[UPKEY[c.dataset.clear]] = null;
     var msg = document.querySelector('.up[data-up="'+c.dataset.clear+'"] .up-msg'); msg.className = "up-msg"; msg.textContent = "";
-    renderUp(c.dataset.clear); renderStage(); save();
+    renderUp(c.dataset.clear); renderStage(); renderPick(); save();
   });
 
   // Plantilla
@@ -1317,6 +1419,7 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       if (state.idea.trim()) L.push("Idea: "+state.idea.trim());
     }
     L.push("Patrocinador: "+(state.sponsor.trim()||(state.sponsorLogo?"el del logo":"ninguno")));
+    L.push("Marcaje estándar: escudo pecho izquierdo 8 cm · logo DA pecho derecho 5 cm · patrocinador centro hasta 26×9 cm · nombre 7 cm y dorsal 25 cm en la espalda");
     L.push("");
     L.push("Plantilla ("+state.roster.length+"):");
     state.roster.forEach(function(r,i){
@@ -1460,13 +1563,24 @@ footer ul a:hover{color:#fff;text-decoration:underline}
     $("plantilla").scrollIntoView({behavior:"smooth", block:"start"});
   });
 
+  // Esquema de dónde va cada cosa, en el color del modelo elegido. No es el diseño: el diseño es el de la foto
+  function marcajeHtml(){
+    var h = state.model.hex || "#DDDDDD";
+    var sk = {pattern:"lisa", c1:h, c2:h, c3:h, ink:"auto", outline:"", team:state.team, sponsor:state.sponsor, crest:state.crest, sponsorLogo:state.sponsorLogo};
+    return '<div class="marcaje"><div class="mk-views">'
+      + '<figure>'+shirt(sk, "front")+'<figcaption>Delante</figcaption></figure>'
+      + '<figure>'+shirt(sk, "back")+'<figcaption>Detrás</figcaption></figure></div>'
+      + '<div><p class="mk-t">Dónde va cada cosa</p><ul class="mk-list">'+MARCAJE.map(function(m){ return '<li><b>'+m[0]+':</b> '+m[1]+'</li>'; }).join("")+'</ul>'
+      + '<p class="mk-note">Esquema con vuestro escudo y patrocinador. El diseño de la camiseta es el de la foto; antes de fabricar os mandamos el boceto.</p></div></div>';
+  }
   // Lo elegido, arriba del pedido
   function renderPick(){
     var el = $("pick");
     if (state.model){
       el.innerHTML = '<div class="pick"><img src="'+state.model.img+'" alt="" width="120" height="90"><div><h4>'+esc(state.model.name)+'</h4>'
         + '<p>Color '+esc(state.model.name)+'-'+(state.model.color+1)+' · de catálogo</p>'
-        + '<div class="acts"><a href="#" data-model="'+state.model.id+'">Cambiar color</a><a href="./#camisetas">Ver otros modelos</a></div></div></div>';
+        + '<div class="acts"><a href="#" data-model="'+state.model.id+'">Cambiar color</a><a href="./#camisetas">Ver otros modelos</a></div></div></div>'
+        + marcajeHtml();
     } else if (state.kind === "custom"){
       el.innerHTML = '<div class="pick"><div class="mini">'+shirt(state, "front", {team:""})+'</div><div><h4>Diseño a medida</h4>'
         + '<p>Punto de partida: '+PATS.filter(function(p){return p[0]===state.pattern;})[0][1]+' · '+colorName(state.c1,1)+' y '+colorName(state.c2,1)+' · desde '+MIN_MEDIDA+' camisetas, precio por WhatsApp</p>'
