@@ -195,6 +195,7 @@ th{font-size:12px;color:var(--mute)}
     $("detail").innerHTML = '<p class="none">Cargando...</p>';
     api({accion:"ver", codigo:codigo}).then(pintar, function(err){ $("detail").innerHTML = '<p class="none">'+esc(err)+'</p>'; });
   }
+  var POSN = {pecho:"pecho", espalda:"espalda (bajo el dorsal)", "manga-izq":"manga izquierda", "manga-der":"manga derecha"};
   function pintar(p){
     var d = p.diseno, c = p.cliente, env = p.envio || {}, a = env.direccion || {};
     var dis = d.tipo === "catalogo"
@@ -208,8 +209,9 @@ th{font-size:12px;color:var(--mute)}
     $("detail").innerHTML =
       '<p class="mono">'+p.codigo+' · '+fecha(p.creado)+'</p><h2>'+esc(p.equipo||"(sin nombre)")+'</h2>'
       + '<h3>Cliente</h3><dl class="kv"><dt>Nombre</dt><dd>'+esc(c.nombre)+'</dd><dt>WhatsApp</dt><dd><a href="https://wa.me/'+tel(c.telefono)+'" target="_blank" rel="noopener">'+esc(c.telefono)+'</a></dd><dt>Email</dt><dd><a href="mailto:'+esc(c.email)+'">'+esc(c.email)+'</a></dd></dl>'
-      + '<h3>Diseño</h3><dl class="kv">'+dis+'<dt>Patrocinador</dt><dd>'+esc(p.patrocinador||"-")+'</dd></dl>'
-      + '<h3>Archivos</h3><div class="files">'+fileBox("Escudo", p.archivos.escudo, p.escudo)+fileBox("Patrocinador", p.archivos.patrocinador, p.logo_patrocinador)+fileBox("Boceto", p.archivos.boceto, p.boceto)+'</div>'
+      + '<h3>Diseño</h3><dl class="kv">'+dis+'<dt>Patrocinador</dt><dd>'+esc(p.patrocinador||"-")+((p.patrocinador||p.logo_patrocinador) ? ' · '+esc(POSN[d.patrocinador_pos] || "pecho") : '')+'</dd>'
+        + (d.patrocinador2 ? '<dt>Patrocinador 2</dt><dd>'+esc(d.patrocinador2.texto||"(logo)")+' · '+esc(POSN[d.patrocinador2.pos] || "")+'</dd>' : '')+'</dl>'
+      + '<h3>Archivos</h3><div class="files">'+fileBox("Escudo", p.archivos.escudo, p.escudo)+fileBox("Patrocinador", p.archivos.patrocinador, p.logo_patrocinador)+(d.patrocinador2 && d.patrocinador2.logo ? fileBox("Patrocinador 2", p.archivos.patrocinador2, d.patrocinador2.logo) : '')+fileBox("Boceto", p.archivos.boceto, p.boceto)+'</div>'
       + '<label for="up-boceto">'+(p.boceto ? "Cambiar boceto" : "Subir boceto")+' (PNG, JPG, WebP o PDF, máx. 10 MB)</label><input type="file" id="up-boceto" accept="image/png,image/jpeg,image/webp,application/pdf"><p class="note" id="up-msg"></p>'
       + '<div class="actions"><a class="btn btn-y" href="'+waBoceto+'" target="_blank" rel="noopener"'+(p.boceto?"":" hidden")+'>Mandar boceto por WhatsApp</a><button class="btn" id="copy-link">Copiar enlace del cliente</button><a class="btn" href="'+esc(p.enlace_cliente)+'" target="_blank" rel="noopener">Ver como cliente</a></div>'
       + '<h3>Plantilla ('+p.plantilla.length+')</h3><table><thead><tr><th>#</th><th>Nombre</th><th>Dorsal</th><th>Talla</th><th>Fábrica</th><th>Pieza</th></tr></thead><tbody>'

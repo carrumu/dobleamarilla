@@ -24,12 +24,13 @@ const acciones = {
   async ver(b) {
     const { data: p, error: e } = await db().from("pedidos").select("*").eq("codigo", b.codigo).single();
     if (e) throw e;
-    const [escudo, patro, boceto] = await Promise.all([
-      urlFirmada("logos", p.escudo, 86400), urlFirmada("logos", p.logo_patrocinador, 86400), urlFirmada("bocetos", p.boceto, 86400)
+    const [escudo, patro, boceto, patro2] = await Promise.all([
+      urlFirmada("logos", p.escudo, 86400), urlFirmada("logos", p.logo_patrocinador, 86400), urlFirmada("bocetos", p.boceto, 86400),
+      urlFirmada("logos", p.diseno && p.diseno.patrocinador2 && p.diseno.patrocinador2.logo, 86400)
     ]);
     const cod = codigoDiseno(p.diseno);
     return json({ ...p, codigo_diseno: cod, ref_proveedor: refsProveedor()[cod.split("-")[0]] || "",
-      archivos: { escudo, patrocinador: patro, boceto }, enlace_cliente: SITE + "/pedido.html?t=" + p.token });
+      archivos: { escudo, patrocinador: patro, patrocinador2: patro2, boceto }, enlace_cliente: SITE + "/pedido.html?t=" + p.token });
   },
 
   async guardar(b) {
@@ -107,12 +108,15 @@ const acciones = {
     const refs = refsProveedor(), filas = [];
     for (const p of data) {
       const cod = codigoDiseno(p.diseno), d = p.envio || {}, a = d.direccion || {};
-      const [escudo, patro] = await Promise.all([urlFirmada("logos", p.escudo, 7 * 86400), urlFirmada("logos", p.logo_patrocinador, 7 * 86400)]);
+      const p2 = (p.diseno || {}).patrocinador2 || null;
+      const [escudo, patro, patro2] = await Promise.all([urlFirmada("logos", p.escudo, 7 * 86400), urlFirmada("logos", p.logo_patrocinador, 7 * 86400), urlFirmada("logos", p2 && p2.logo, 7 * 86400)]);
+      const POS_EN = { pecho: "chest", espalda: "back, under number", "manga-izq": "left sleeve", "manga-der": "right sleeve" };
       const medida = p.diseno.tipo === "medida" ? [p.diseno.patron, p.diseno.c1, p.diseno.c2, p.diseno.c3].join(" ") : "";
       p.plantilla.forEach((j, i) => filas.push({
         pedido: p.codigo, equipo: p.equipo, modelo: cod, ref: refs[cod.split("-")[0]] || "", diseno_medida: medida,
         jugador: i + 1, nombre: j.nombre, dorsal: j.dorsal, talla: j.talla, talla_fabrica: (BRAND.sizesFactory || {})[j.talla] || j.talla, pieza: j.pieza === "kit" ? "camiseta+pantalon" : "camiseta",
-        patrocinador: p.patrocinador, escudo: escudo || "", logo_patrocinador: patro || "",
+        patrocinador: p.patrocinador, patrocinador_posicion: POS_EN[(p.diseno || {}).patrocinador_pos] || "chest",
+        patrocinador2: p2 ? p2.texto : "", patrocinador2_posicion: p2 ? POS_EN[p2.pos] || "" : "", logo_patrocinador2: patro2 || "", escudo: escudo || "", logo_patrocinador: patro || "",
         envio_nombre: d.nombre || p.cliente.nombre, envio_telefono: d.telefono || p.cliente.telefono,
         direccion: [a.line1, a.line2].filter(Boolean).join(", "), cp: a.postal_code || "", ciudad: a.city || "", provincia: a.state || "", pais: a.country || ""
       }));

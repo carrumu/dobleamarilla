@@ -4,6 +4,7 @@ import { avisarCliente, avisarTienda } from "./_lib/correo.js";
 
 const PATRONES = ["lisa", "banda", "aros", "rayas", "mitades", "faja", "corte", "laterales", "tarjetas"];
 const HEX = /^#[0-9A-Fa-f]{6}$/;
+const POS_PATRO = ["pecho", "espalda", "manga-izq", "manga-der"];
 const txt = (v, max) => String(v ?? "").replace(/[\u0000-\u001f]/g, " ").trim().slice(0, max);
 
 function diseno(d) {
@@ -12,14 +13,15 @@ function diseno(d) {
     const m = CATALOGO.find((x) => x.id === d.modelo);
     const c = Number(d.color);
     if (!m || !Number.isInteger(c) || c < 0 || c >= m.colors.length) throw new Error("El modelo elegido no existe.");
-    return { tipo: "catalogo", modelo: m.id, color: c };
+    return { tipo: "catalogo", modelo: m.id, color: c, patrocinador_pos: POS_PATRO.includes(d.patrocinador_pos) ? d.patrocinador_pos : "pecho" };
   }
   if (d.tipo === "medida") {
     const col = (v, def) => (HEX.test(v || "") ? v.toUpperCase() : def);
     return {
       tipo: "medida", patron: PATRONES.includes(d.patron) ? d.patron : "lisa",
       c1: col(d.c1, "#FFFFFF"), c2: col(d.c2, "#FFFFFF"), c3: col(d.c3, "#FFFFFF"),
-      tinta: col(d.tinta, ""), contorno: col(d.contorno, ""), idea: txt(d.idea, 600)
+      tinta: col(d.tinta, ""), contorno: col(d.contorno, ""), idea: txt(d.idea, 600),
+      patrocinador_pos: POS_PATRO.includes(d.patrocinador_pos) ? d.patrocinador_pos : "pecho"
     };
   }
   throw new Error("Elige un modelo del catálogo o tu diseño a medida.");
@@ -51,6 +53,11 @@ export async function POST(req) {
     if (pl.length < MINIMO_PEDIDO) throw new Error("El pedido mínimo es de " + MINIMO_PEDIDO + " camisetas.");
     if (d.tipo === "medida" && pl.length < MINIMO_MEDIDA) throw new Error("El diseño a medida es a partir de " + MINIMO_MEDIDA + " camisetas.");
     const ruta = (v) => (v && RUTA_SUBIDA.test(v) ? v : null);
+    // Segundo patrocinador (opcional): va dentro de "diseno" para no tocar la tabla
+    const p2 = b.patrocinador2;
+    if (p2 && typeof p2 === "object" && (txt(p2.texto, 40) || ruta(p2.logo))) {
+      d.patrocinador2 = { texto: txt(p2.texto, 40), pos: POS_PATRO.includes(p2.pos) && p2.pos !== d.patrocinador_pos ? p2.pos : POS_PATRO.find((x) => x !== d.patrocinador_pos), logo: ruta(p2.logo) };
+    }
     const fila = {
       token: token(), cliente, equipo: txt(b.equipo, 28), diseno: d, patrocinador: txt(b.patrocinador, 40),
       escudo: ruta(b.escudo), logo_patrocinador: ruta(b.logo_patrocinador), plantilla: pl,

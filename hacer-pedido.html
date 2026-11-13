@@ -204,16 +204,40 @@ footer .logo img{height:34px}
 .pick .mini{width:120px;height:90px;display:flex;align-items:center;justify-content:center;background:var(--card);border-radius:10px}
 .pick .mini svg{height:78px;width:auto}
 .pick-empty{text-align:center;padding:8px 0}
-.marcaje{display:grid;gap:14px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
-@media(min-width:560px){.marcaje{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:center}}
-.mk-views{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.mk-views figure{margin:0;background:var(--card);border-radius:10px;padding:8px 6px 4px;text-align:center}
-.mk-views svg{width:100%;height:auto}
-.mk-views figcaption{font-size:12px;font-weight:600;color:var(--mute)}
-.mk-t{margin:0 0 6px;font-weight:700;font-size:15px}
-.mk-list{list-style:none;margin:0 0 8px;padding:0;font-size:13px;line-height:1.45;display:grid;gap:3px}
-.mk-list b{font-weight:700}
-.mk-note{margin:0;font-size:12px;color:var(--mute)}
+.lbl-pos{display:block;font-weight:600;font-size:14px;margin-bottom:8px}
+.pos-sel{display:flex;flex-wrap:wrap;gap:6px}
+.pos-sel button{min-height:38px;padding:0 14px;border:1.5px solid var(--line);border-radius:999px;background:#fff;font:600 14px/1 var(--f-body);cursor:pointer}
+.pos-sel button:hover{border-color:#bdbcb6}
+.pos-sel button[aria-checked="true"]{border-color:var(--negro);background:var(--negro);color:#fff}
+.pos-sel button:disabled{opacity:.35;cursor:not-allowed}
+.patro2{margin-top:16px;padding:14px;border:1.5px solid var(--line);border-radius:12px;background:var(--panel)}
+.patro2-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.add-patro{margin-top:14px;min-height:42px;padding:0 16px;border:1.5px dashed #bdbcb6;border-radius:10px;background:#fff;font:700 14px/1 var(--f-body);cursor:pointer;width:100%}
+.add-patro span{font-weight:500;color:var(--mute)}
+.add-patro:hover{border-color:var(--negro)}
+.marcaje{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.mk-t{margin:0 0 12px;font-weight:700;font-size:17px}
+.mk-views{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mk-views figure{position:relative;margin:0;background:linear-gradient(180deg,#f6f6f4,#ececea);border-radius:14px;padding:40px 10px 14px}
+@media(min-width:700px){.mk-views figure{padding:44px 22px 18px}}
+.mk-views svg{display:block;width:100%;height:auto;filter:drop-shadow(0 10px 14px rgba(17,17,16,.12))}
+.mk-lbl{position:absolute;left:12px;top:13px;font:700 11px/1 var(--f-mono);letter-spacing:.1em;color:var(--mute)}
+.mk-zoom{position:absolute;right:8px;top:7px;display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:0 11px;border:0;border-radius:999px;background:#fff;box-shadow:0 1px 4px rgba(17,17,16,.12);font:600 12px/1 var(--f-body);cursor:pointer}
+.mk-zoom svg{width:14px;height:14px;filter:none}
+@media(max-width:520px){.mk-zoom{font-size:0;gap:0;width:32px;padding:0;justify-content:center}.mk-zoom svg{width:16px;height:16px}}
+.mk-list{list-style:none;margin:12px 0 10px;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media(min-width:700px){.mk-list{grid-template-columns:repeat(3,1fr)}}
+.mk-list li{background:var(--card);border-radius:10px;padding:8px 10px;font-size:12.5px;line-height:1.35;color:#3d3d3a}
+.mk-list b{display:block;font-size:13px;color:var(--fg)}
+.mk-note{margin:0;font-size:12.5px;color:var(--mute)}
+.mk-dlg{border:0;padding:0;border-radius:var(--r);width:min(720px,calc(100% - 24px));max-height:calc(100% - 24px);box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.mk-dlg::backdrop{background:rgba(17,17,16,.6)}
+.mk-dlg-in{position:relative;padding:20px 20px 16px;background:linear-gradient(180deg,#f6f6f4,#ececea)}
+.mk-dlg-in svg{display:block;width:100%;height:auto;max-height:72vh;filter:drop-shadow(0 14px 20px rgba(17,17,16,.14))}
+.mk-dlg-bar{display:flex;justify-content:center;gap:8px;margin-top:12px}
+.mk-dlg-bar button{min-height:38px;padding:0 16px;border:0;border-radius:999px;background:#fff;font:700 13px/1 var(--f-body);cursor:pointer}
+.mk-dlg-bar button[aria-pressed="true"]{background:var(--negro);color:#fff}
+.mk-dlg .m-close{position:absolute;right:12px;top:12px}
 .pick-empty p{margin:0 0 12px;color:var(--mute)}
 .pick-empty .ctas{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .panel-foot{border-top:1px solid var(--line);margin-top:22px;padding-top:18px}
@@ -478,6 +502,15 @@ footer ul a:hover{color:#fff;text-decoration:underline}
               <label for="sponsor">Patrocinador (opcional)</label>
               <input type="text" id="sponsor" maxlength="22" placeholder="Bar Manolo" autocomplete="off">
             </div>
+            <div class="field" style="margin-top:12px">
+              <span class="lbl-pos" id="pos-lbl">Dónde va el patrocinador</span>
+              <div class="pos-sel" role="radiogroup" aria-labelledby="pos-lbl">
+                <button type="button" role="radio" data-spos="pecho">Pecho</button>
+                <button type="button" role="radio" data-spos="espalda">Espalda</button>
+                <button type="button" role="radio" data-spos="manga-izq">Manga izquierda</button>
+                <button type="button" role="radio" data-spos="manga-der">Manga derecha</button>
+              </div>
+            </div>
             <div class="ups">
               <div class="up" data-up="crest">
                 <input type="file" id="up-crest" accept="image/png,image/jpeg,image/webp,application/pdf" hidden>
@@ -492,7 +525,32 @@ footer ul a:hover{color:#fff;text-decoration:underline}
                 <p class="up-msg" aria-live="polite"></p>
               </div>
             </div>
-            <p class="hint">Sube el escudo como lo tengáis: recortamos los márgenes y, si tiene fondo liso, lo quitamos para la vista previa. Va en el pecho izquierdo a unos 8 cm, y el patrocinador en el centro. A la fábrica le llega vuestro archivo original. Si no los tienes a mano, nos los mandas luego por WhatsApp.</p>
+            <div class="patro2" id="patro2" hidden>
+              <div class="patro2-head"><b>Segundo patrocinador</b><button type="button" class="del" id="del-patro2">Quitar</button></div>
+              <div class="field">
+                <label for="sponsor2">Nombre del segundo patrocinador</label>
+                <input type="text" id="sponsor2" maxlength="22" placeholder="Talleres Pepe" autocomplete="off">
+              </div>
+              <div class="field" style="margin-top:12px">
+                <span class="lbl-pos" id="pos2-lbl">Dónde va</span>
+                <div class="pos-sel" role="radiogroup" aria-labelledby="pos2-lbl">
+                  <button type="button" role="radio" data-spos2="pecho">Pecho</button>
+                  <button type="button" role="radio" data-spos2="espalda">Espalda</button>
+                  <button type="button" role="radio" data-spos2="manga-izq">Manga izquierda</button>
+                  <button type="button" role="radio" data-spos2="manga-der">Manga derecha</button>
+                </div>
+              </div>
+              <div class="ups" style="margin-top:12px">
+                <div class="up" data-up="sponsor2">
+                  <input type="file" id="up-sponsor2" accept="image/png,image/jpeg,image/webp,application/pdf" hidden>
+                  <label for="up-sponsor2" class="up-box"><b>Subir logo del segundo patrocinador</b><span class="up-hint"></span></label>
+                  <div class="up-done" hidden><span class="up-thumb" aria-hidden="true"></span><span class="up-name"></span><button type="button" class="del" data-fondo="sponsor2" hidden></button><button type="button" class="del" data-clear="sponsor2">Quitar</button></div>
+                  <p class="up-msg" aria-live="polite"></p>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="add-patro" id="add-patro2">+ Añadir otro patrocinador <span>(máximo 2)</span></button>
+            <p class="hint">Sube el escudo como lo tengáis: recortamos los márgenes y, si tiene fondo liso, lo quitamos para la vista previa. El escudo va en el pecho izquierdo, a unos 8 cm, y cada patrocinador donde elijáis. A la fábrica le llega vuestro archivo original. Si no los tienes a mano, nos los mandas luego por WhatsApp.</p>
           </div>
           <h3 class="box-t"><span>2</span>Plantilla</h3>
           <div class="roster-head" aria-hidden="true"><span>#</span><span>Nombre en la espalda</span><span>Dorsal</span><span>Talla</span><span>Pieza</span><span></span></div>
@@ -696,7 +754,7 @@ footer ul a:hover{color:#fff;text-decoration:underline}
   var COLLAR = "M104 18 C118 44 182 44 196 18 L186 15 C174 34 126 34 114 15 Z";
   var CUFFS = "M8 74 L36 128 L46 123 L18 69 Z M292 74 L264 128 L254 123 L282 69 Z";
 
-  var state = {kind:"std", idea:"", pattern:"aros", c1:"#3E8E78", c2:"#ECECE6", c3:"#8F8F8A", ink:"auto", outline:"", team:"", sponsor:"", crest:null, sponsorLogo:null, side:"front",
+  var state = {kind:"std", idea:"", pattern:"aros", c1:"#3E8E78", c2:"#ECECE6", c3:"#8F8F8A", ink:"auto", outline:"", team:"", sponsor:"", sponsorPos:"pecho", crest:null, sponsorLogo:null, sponsor2On:false, sponsor2:"", sponsor2Pos:"espalda", sponsor2Logo:null, side:"front",
     roster:[]};
   var KEY = "da-pedido-v2";
   try { var saved = JSON.parse(localStorage.getItem(KEY)||"null"); if (saved && saved.roster) state = Object.assign(state, saved); } catch(e) {}
@@ -753,20 +811,54 @@ footer ul a:hover{color:#fff;text-decoration:underline}
   // ---------- Marcaje estándar ----------
   // Todos los pedidos igual: escudo en el pecho izquierdo del jugador (a la derecha en la vista de frente),
   // logo de Doble Amarilla en el pecho derecho y patrocinador en el centro. Decisión de marca 2026-11-13.
-  var MARCAJE = [
-    ["Escudo", "pecho izquierdo, unos 8 cm"],
-    ["Logo Doble Amarilla", "pecho derecho, 5 cm, en un color"],
-    ["Patrocinador", "centro del pecho, hasta 26 × 9 cm"],
-    ["Nombre", "espalda, arriba, letras de 7 cm"],
-    ["Dorsal", "espalda, 25 cm"]
-  ];
+  // El patrocinador lo coloca el cliente: en el pecho, en la espalda (bajo el dorsal) o en una manga
+  var SPOS = {
+    "pecho":     {nombre:"Pecho", texto:"centro del pecho, hasta 26 × 9 cm", cara:"front"},
+    "espalda":   {nombre:"Espalda", texto:"espalda, bajo el dorsal, hasta 24 × 8 cm", cara:"back"},
+    "manga-izq": {nombre:"Manga izquierda", texto:"manga izquierda, hasta 8 × 8 cm", cara:"front"},
+    "manga-der": {nombre:"Manga derecha", texto:"manga derecha, hasta 8 × 8 cm", cara:"front"}
+  };
+  function sposDe(s){ return SPOS[s && s.sponsorPos] ? s.sponsorPos : "pecho"; }
+  function spos2De(s){ return SPOS[s && s.sponsor2Pos] ? s.sponsor2Pos : "espalda"; }
+  // Patrocinadores con algo puesto (texto o logo), como mucho 2, cada uno en su sitio
+  function patros(s){
+    var L = [], t1 = (s.sponsor || "").trim(), t2 = (s.sponsor2 || "").trim();
+    if (t1 || (s.sponsorLogo && s.sponsorLogo.thumb)) L.push({text:t1, logo:s.sponsorLogo, pos:sposDe(s)});
+    if (s.sponsor2On && (t2 || (s.sponsor2Logo && s.sponsor2Logo.thumb))) L.push({text:t2, logo:s.sponsor2Logo, pos:spos2De(s)});
+    return L;
+  }
+  function marcajeLista(){
+    return [
+      ["Escudo", "pecho izquierdo, unos 8 cm"],
+      ["Logo Doble Amarilla", "pecho derecho, 5 cm, en un color"]
+    ].concat(patros(state).length ? patros(state).map(function(p, i){ return ["Patrocinador" + (patros(state).length > 1 ? " " + (i + 1) : ""), SPOS[p.pos].texto]; }) : [["Patrocinador", SPOS[sposDe(state)].texto]], [
+      ["Nombre", "espalda, arriba, letras de 7 cm"],
+      ["Dorsal", "espalda, 25 cm"]
+    ]);
+  }
   // Cajas de la vista plana: centro, ancho y alto máximos y "lado equivalente" (el tamaño visual que se busca).
   // Así un escudo ancho, uno alto y uno redondo se ven del mismo tamaño, y nada se sale de su sitio.
   var FLAT = {
     crest:{cx:184, cy:88, maxW:31, maxH:33, side:28},
     da:{cx:116, cy:88, w:17},
-    sponsor:{cx:150, cy:130, maxW:88, maxH:31, side:50}, sponsorY:138, teamY:136
+    sponsor:{cx:150, cy:130, maxW:88, maxH:31, side:50}, sponsorY:138, teamY:136,
+    "espalda":   {cx:150, cy:262, maxW:81, maxH:27, side:45},
+    "manga-izq": {cx:259, cy:86, maxW:27, maxH:27, side:24, rot:-54},
+    "manga-der": {cx:41, cy:86, maxW:27, maxH:27, side:24, rot:54}
   };
+  // Dibuja el patrocinador (logo o texto) en su sitio, en la vista plana (SVG)
+  function sponsorSvg(sp, side, ink, tf){
+    var pos = sp.pos, sponsor = sp.text || "";
+    if (SPOS[pos].cara !== side) return "";
+    var b = pos === "pecho" ? FLAT.sponsor : FLAT[pos], rot = b.rot ? ' transform="rotate('+b.rot+' '+b.cx+' '+b.cy+')"' : '';
+    if (sp.logo && sp.logo.thumb){
+      var r = fitLogo(sp.logo.ar, b);
+      return '<image href="'+sp.logo.thumb+'" x="'+r[0]+'" y="'+r[1]+'" width="'+r[2]+'" height="'+r[3]+'" preserveAspectRatio="xMidYMid meet"'+rot+'/>';
+    }
+    var px = pos === "pecho" ? (sponsor.length>14?16:sponsor.length>9?20:24) : pos === "espalda" ? (sponsor.length>14?14:sponsor.length>9?17:20) : (sponsor.length>9?6.5:8.5);
+    var y = pos === "pecho" ? FLAT.sponsorY : b.cy + px*0.36;
+    return '<text x="'+b.cx+'" y="'+y+'" '+tf+' font-size="'+px+'" letter-spacing=".4"'+rot+'>'+esc(sponsor.toUpperCase())+'</text>';
+  }
   function fitLogo(ar, b){
     ar = ar > 0 ? ar : 1;
     var h = b.side / Math.sqrt(ar), w = h * ar;
@@ -780,8 +872,12 @@ footer ul a:hover{color:#fff;text-decoration:underline}
     var name = opts.name != null ? opts.name : (firstName() || "PEPE");
     var num = opts.num != null ? opts.num : (firstNum() || "7");
     var out = '<svg viewBox="0 0 300 320" xmlns="http://www.w3.org/2000/svg">'
-      + '<defs><clipPath id="'+id+'"><path d="'+BODY+'"/></clipPath></defs>'
+      + '<defs><clipPath id="'+id+'"><path d="'+BODY+'"/></clipPath>'
+      + '<linearGradient id="'+id+'g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".10"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".10"/></linearGradient>'
+      + '<linearGradient id="'+id+'h" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".08"/><stop offset=".22" stop-color="#000" stop-opacity="0"/><stop offset=".78" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".08"/></linearGradient></defs>'
       + fabric(s, side, id)
+      + '<g clip-path="url(#'+id+')"><path d="'+BODY+'" fill="url(#'+id+'g)"/><path d="'+BODY+'" fill="url(#'+id+'h)"/>'
+      + '<path d="M66 112 L58 32 M234 112 L242 32" stroke="rgba(0,0,0,.14)" stroke-width=".8" stroke-dasharray="2.2 1.6" fill="none"/></g>'
       + '<path d="'+BODY+'" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="1.5"/>';
     var stroke = s.outline ? ' stroke="'+s.outline+'" stroke-width="2.5" paint-order="stroke" stroke-linejoin="round"' : '';
     var tf = 'font-family="Sofia Sans Extra Condensed, Arial Narrow, sans-serif" font-weight="900" font-style="italic" text-anchor="middle" fill="'+ink+'"'+stroke;
@@ -795,13 +891,14 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       // Logo de Doble Amarilla en el pecho derecho, en un solo color
       var da = FLAT.da, dk = da.w / 136;
       out += '<g transform="translate('+(da.cx - 68*dk)+' '+(da.cy - 71*dk)+') scale('+dk+')" style="--c1:'+ink+';--c2:'+ink+'"><use href="#da" width="136" height="142"/></g>';
-      // Con patrocinador, el centro del pecho es suyo; sin él, va el nombre del equipo
-      if (s.sponsorLogo && s.sponsorLogo.thumb){ r = fitLogo(s.sponsorLogo.ar, FLAT.sponsor); out += '<image href="'+s.sponsorLogo.thumb+'" x="'+r[0]+'" y="'+r[1]+'" width="'+r[2]+'" height="'+r[3]+'" preserveAspectRatio="xMidYMid meet"/>'; }
-      else if (sponsor) out += '<text x="150" y="'+FLAT.sponsorY+'" '+tf+' font-size="'+(sponsor.length>14?16:sponsor.length>9?20:24)+'" letter-spacing=".5">'+esc(sponsor.toUpperCase())+'</text>';
-      else if (team) out += '<text x="150" y="'+FLAT.teamY+'" '+tf+' font-size="'+(team.length>16?12:15)+'" letter-spacing=".5">'+esc(team.toUpperCase())+'</text>';
+      // Patrocinador donde lo haya puesto el cliente. Sin patrocinador en el pecho, ahí va el nombre del equipo
+      var ps = patros(s);
+      ps.forEach(function(sp){ out += sponsorSvg(sp, "front", ink, tf); });
+      if (!ps.some(function(sp){ return sp.pos === "pecho"; }) && team) out += '<text x="150" y="'+FLAT.teamY+'" '+tf+' font-size="'+(team.length>16?12:15)+'" letter-spacing=".5">'+esc(team.toUpperCase())+'</text>';
     } else {
       out += '<text x="150" y="96" '+tf+' font-size="'+(name.length>9?22:28)+'" letter-spacing="1">'+esc(name.toUpperCase())+'</text>';
       out += '<text x="150" y="232" '+tf+' font-size="128">'+esc(num)+'</text>';
+      patros(s).forEach(function(sp){ out += sponsorSvg(sp, "back", ink, tf); });
     }
     return out + '</svg>';
   }
@@ -825,9 +922,11 @@ footer ul a:hover{color:#fff;text-decoration:underline}
     model: {w:300, h:380, clip:false,
       crest:{cx:186, cy:90, maxW:31, maxH:33, side:28}, da:{cx:114, cy:90, w:17},
       sponsor:{cx:150, cy:128, maxW:88, maxH:31, side:50}, sponsorY:136, teamY:134,
+      "espalda":{cx:150, cy:272, maxW:81, maxH:27, side:45}, "manga-izq":{cx:268, cy:124, maxW:27, maxH:27, side:24, rot:-50}, "manga-der":{cx:32, cy:124, maxW:27, maxH:27, side:24, rot:50},
       nameY:82, numY:240, numPx:132},
     flat: {w:300, h:320, clip:true,
       crest:FLAT.crest, da:FLAT.da, sponsor:FLAT.sponsor, sponsorY:FLAT.sponsorY, teamY:FLAT.teamY,
+      "espalda":FLAT["espalda"], "manga-izq":FLAT["manga-izq"], "manga-der":FLAT["manga-der"],
       nameY:96, numY:232, numPx:128}
   };
 
@@ -1037,9 +1136,20 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       function finish(){ if (!pending && seq === paintSeq[side]){ g.setTransform(1,0,0,1,0,0); done(); } }
       function logo(src, box){
         pending++; var im = new Image();
-        im.onload = function(){ if (seq === paintSeq[side]){ g.setTransform(K,0,0,K,0,0); var r = fitLogo(im.width/im.height, box); g.drawImage(im, r[0], r[1], r[2], r[3]); } pending--; finish(); };
+        im.onload = function(){ if (seq === paintSeq[side]){ g.setTransform(K,0,0,K,0,0); var r = fitLogo(im.width/im.height, box);
+          if (box.rot){ g.translate(box.cx, box.cy); g.rotate(box.rot*Math.PI/180); g.translate(-box.cx, -box.cy); }
+          g.drawImage(im, r[0], r[1], r[2], r[3]); g.setTransform(K,0,0,K,0,0); } pending--; finish(); };
         im.onerror = function(){ pending--; finish(); };
         im.src = src;
+      }
+      function pintarPatro(b, pos, p){
+        if (p.logo && p.logo.thumb) { logo(p.logo.thumb, b); return; }
+        var sp = p.text.toUpperCase(), n = sp.length;
+        var px = pos === "pecho" ? (n>14?16:n>9?20:24) : pos === "espalda" ? (n>14?14:n>9?17:20) : (n>9?6.5:8.5);
+        g.save();
+        if (b.rot){ g.translate(b.cx, b.cy); g.rotate(b.rot*Math.PI/180); g.translate(-b.cx, -b.cy); }
+        text(sp, b.cx, pos === "pecho" ? L.sponsorY : b.cy + px*0.36, px, .4);
+        g.restore();
       }
       if (side === "front"){
         // Logo de Doble Amarilla en el pecho derecho: las dos tarjetas, la segunda con un filete del color de la tela que hace de hueco
@@ -1052,14 +1162,14 @@ footer ul a:hover{color:#fff;text-decoration:underline}
         if (state.crest && state.crest.thumb) logo(state.crest.thumb, cr);
         else { g.save(); g.strokeStyle = ink; g.lineWidth = 1.2; g.setLineDash([3,2.4]); g.beginPath(); g.arc(cr.cx, cr.cy, 12, 0, 2*Math.PI); g.stroke(); g.restore();
                g.font = "700 4.6px 'JetBrains Mono', monospace"; g.fillStyle = ink; g.textAlign = "center"; g.fillText("ESCUDO", cr.cx, cr.cy+2); }
-        var sp = state.sponsor.trim(), tm = state.team.trim();
-        if (state.sponsorLogo && state.sponsorLogo.thumb) logo(state.sponsorLogo.thumb, L.sponsor);
-        else if (sp) text(sp.toUpperCase(), 150, L.sponsorY, sp.length>14?16:sp.length>9?20:24, .5);
-        else if (tm) text(tm.toUpperCase(), 150, L.teamY, tm.length>16?12:15, .5);
+        var tm = state.team.trim(), ps = patros(state);
+        ps.forEach(function(p){ if (SPOS[p.pos].cara === "front") pintarPatro(p.pos === "pecho" ? L.sponsor : L[p.pos], p.pos, p); });
+        if (!ps.some(function(p){ return p.pos === "pecho"; }) && tm) text(tm.toUpperCase(), 150, L.teamY, tm.length>16?12:15, .5);
       } else {
         var nm = (firstName() || "PEPE").toUpperCase(), nu = firstNum() || "7";
         text(nm, 150, L.nameY, nm.length>9?22:28, 1);
         text(nu, 150, L.numY, L.numPx, 0);
+        patros(state).forEach(function(p){ if (p.pos === "espalda") pintarPatro(L["espalda"], "espalda", p); });
       }
       finish();
     };
@@ -1154,13 +1264,39 @@ footer ul a:hover{color:#fff;text-decoration:underline}
   $("sponsor").value = state.sponsor;
   $("sponsor").addEventListener("input", function(){ state.sponsor = this.value; showSide("front"); renderStage(); renderSummary(); save(); });
   $("sponsor").addEventListener("change", renderPick); $("team").addEventListener("change", renderPick);
+  function renderPos(){
+    var p1 = sposDe(state), p2 = spos2De(state);
+    document.querySelectorAll("[data-spos]").forEach(function(b){ b.setAttribute("aria-checked", b.dataset.spos === p1); b.disabled = state.sponsor2On && b.dataset.spos === p2; });
+    document.querySelectorAll("[data-spos2]").forEach(function(b){ b.setAttribute("aria-checked", b.dataset.spos2 === p2); b.disabled = b.dataset.spos2 === p1; });
+    $("patro2").hidden = !state.sponsor2On; $("add-patro2").hidden = !!state.sponsor2On;
+  }
+  function trasCambio(cara){ renderPos(); if (cara) showSide(cara); renderStage(); renderPick(); renderSummary(); save(); }
+  document.addEventListener("click", function(e){
+    var b = e.target.closest("[data-spos]"), b2 = e.target.closest("[data-spos2]");
+    if (b && !b.disabled){ state.sponsorPos = b.dataset.spos; trasCambio(SPOS[state.sponsorPos].cara); }
+    if (b2 && !b2.disabled){ state.sponsor2Pos = b2.dataset.spos2; trasCambio(SPOS[state.sponsor2Pos].cara); }
+  });
+  $("add-patro2").addEventListener("click", function(){
+    state.sponsor2On = true;
+    // Que no caiga en el mismo sitio que el primero
+    if (spos2De(state) === sposDe(state)) state.sponsor2Pos = ["espalda","pecho","manga-izq","manga-der"].filter(function(p){ return p !== sposDe(state); })[0];
+    trasCambio(); $("sponsor2").focus();
+  });
+  $("del-patro2").addEventListener("click", function(){
+    state.sponsor2On = false; state.sponsor2 = ""; state.sponsor2Logo = null; $("sponsor2").value = "";
+    renderUp("sponsor2"); trasCambio();
+  });
+  $("sponsor2").value = state.sponsor2 || "";
+  $("sponsor2").addEventListener("input", function(){ state.sponsor2 = this.value; showSide(SPOS[spos2De(state)].cara); renderStage(); renderSummary(); save(); });
+  $("sponsor2").addEventListener("change", renderPick);
+  renderPos();
   $("idea").value = state.idea;
   $("idea").addEventListener("input", function(){ state.idea = this.value; save(); });
 
   // Subida de escudo y logo del patrocinador
   var MAX_MB = B.uploadMaxMB || 5, MAX_B = MAX_MB*1024*1024;
   var TYPES = ["image/png","image/jpeg","image/webp","application/pdf"];
-  var UPKEY = {crest:"crest", sponsor:"sponsorLogo"};
+  var UPKEY = {crest:"crest", sponsor:"sponsorLogo", sponsor2:"sponsor2Logo"};
   function mb(n){ return (n/1048576).toLocaleString("es-ES",{maximumFractionDigits:1})+" MB"; }
   function drawTo(img, max, type, q){
     var k = Math.min(1, max/Math.max(img.naturalWidth, img.naturalHeight));
@@ -1386,7 +1522,7 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       lines.push(["Punto de partida", PATS.filter(function(p){return p[0]===state.pattern;})[0][1]]);
       lines.push(["Colores", colorName(state.c1,1)+", "+colorName(state.c2,1)+" y cuello "+colorName(state.c3,1)]);
     } else lines.push(["Modelo", "Sin elegir"]);
-    if (state.sponsor.trim()) lines.push(["Patrocinador", state.sponsor.trim()]);
+    patros(state).forEach(function(p, i, all){ lines.push(["Patrocinador" + (all.length > 1 ? " " + (i + 1) : ""), (p.text || "Logo") + " · " + SPOS[p.pos].nombre.toLowerCase()]); });
     if (t.kits) lines.push([t.kits+" × equipación completa", t.custom ? "a convenir" : eur(t.kits*t.unit)]);
     if (t.shirts) lines.push([t.shirts+" × camiseta sola", t.custom ? "a convenir" : eur(t.shirts*t.sUnit)]);
     $("sum-lines").innerHTML = lines.map(function(l){ return '<li><span>'+esc(l[0])+'</span><span>'+esc(l[1])+'</span></li>'; }).join("");
@@ -1418,8 +1554,10 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       L.push("Nombre y dorsal: "+colorName(inkFor(state))+(state.outline ? " con contorno "+colorName(state.outline) : " sin contorno"));
       if (state.idea.trim()) L.push("Idea: "+state.idea.trim());
     }
-    L.push("Patrocinador: "+(state.sponsor.trim()||(state.sponsorLogo?"el del logo":"ninguno")));
-    L.push("Marcaje estándar: escudo pecho izquierdo 8 cm · logo DA pecho derecho 5 cm · patrocinador centro hasta 26×9 cm · nombre 7 cm y dorsal 25 cm en la espalda");
+    var ps = patros(state);
+    if (!ps.length) L.push("Patrocinador: ninguno");
+    ps.forEach(function(p, i){ L.push("Patrocinador" + (ps.length > 1 ? " " + (i + 1) : "") + ": " + (p.text || "el del logo") + " · en " + SPOS[p.pos].nombre.toLowerCase()); });
+    L.push("Marcaje estándar: escudo pecho izquierdo 8 cm · logo DA pecho derecho 5 cm" + ps.map(function(p){ return " · patrocinador " + SPOS[p.pos].texto; }).join("") + " · nombre 7 cm y dorsal 25 cm en la espalda");
     L.push("");
     L.push("Plantilla ("+state.roster.length+"):");
     state.roster.forEach(function(r,i){
@@ -1434,7 +1572,7 @@ footer ul a:hover{color:#fff;text-decoration:underline}
     }
     L.push("");
     var need = ["el escudo"];
-    if (state.sponsor.trim() || state.sponsorLogo) need.push("el logo del patrocinador");
+    if (patros(state).length) need.push(patros(state).length > 1 ? "los logos de los patrocinadores" : "el logo del patrocinador");
     if (need.length) L.push("Os mando "+need.join(" y ")+" por aquí.");
     return L.join("\n");
   }
@@ -1459,11 +1597,12 @@ footer ul a:hover{color:#fff;text-decoration:underline}
     return !bad;
   }
   function payload(){
-    var d = state.model ? {tipo:"catalogo", modelo:state.model.id, color:state.model.color}
-      : {tipo:"medida", patron:state.pattern, c1:state.c1, c2:state.c2, c3:state.c3, tinta:inkFor(state), contorno:state.outline, idea:state.idea};
+    var d = state.model ? {tipo:"catalogo", modelo:state.model.id, color:state.model.color, patrocinador_pos:sposDe(state)}
+      : {tipo:"medida", patron:state.pattern, c1:state.c1, c2:state.c2, c3:state.c3, tinta:inkFor(state), contorno:state.outline, idea:state.idea, patrocinador_pos:sposDe(state)};
     return {
       cliente:state.cliente, equipo:state.team, patrocinador:state.sponsor, diseno:d, web:$("c-web").value,
       escudo:state.crest && state.crest.ruta || null, logo_patrocinador:state.sponsorLogo && state.sponsorLogo.ruta || null,
+      patrocinador2: state.sponsor2On && patros(state).length > 1 ? {texto:state.sponsor2, pos:spos2De(state), logo:state.sponsor2Logo && state.sponsor2Logo.ruta || null} : null,
       plantilla:state.roster.map(function(r){ return {nombre:r.name, dorsal:r.num, talla:r.size, pieza:r.piece}; })
     };
   }
@@ -1566,13 +1705,41 @@ footer ul a:hover{color:#fff;text-decoration:underline}
   // Esquema de dónde va cada cosa, en el color del modelo elegido. No es el diseño: el diseño es el de la foto
   function marcajeHtml(){
     var h = state.model.hex || "#DDDDDD";
-    var sk = {pattern:"lisa", c1:h, c2:h, c3:h, ink:"auto", outline:"", team:state.team, sponsor:state.sponsor, crest:state.crest, sponsorLogo:state.sponsorLogo};
-    return '<div class="marcaje"><div class="mk-views">'
-      + '<figure>'+shirt(sk, "front")+'<figcaption>Delante</figcaption></figure>'
-      + '<figure>'+shirt(sk, "back")+'<figcaption>Detrás</figcaption></figure></div>'
-      + '<div><p class="mk-t">Dónde va cada cosa</p><ul class="mk-list">'+MARCAJE.map(function(m){ return '<li><b>'+m[0]+':</b> '+m[1]+'</li>'; }).join("")+'</ul>'
-      + '<p class="mk-note">Esquema con vuestro escudo y patrocinador. El diseño de la camiseta es el de la foto; antes de fabricar os mandamos el boceto.</p></div></div>';
+    var sk = {pattern:"lisa", c1:h, c2:h, c3:h, ink:"auto", outline:"", team:state.team, sponsor:state.sponsor, sponsorPos:state.sponsorPos, crest:state.crest, sponsorLogo:state.sponsorLogo,
+      sponsor2On:state.sponsor2On, sponsor2:state.sponsor2, sponsor2Pos:state.sponsor2Pos, sponsor2Logo:state.sponsor2Logo};
+    var lupa = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.3-4.3M11 8v6M8 11h6"/></svg>';
+    return '<div class="marcaje"><p class="mk-t">Así irá vuestra equipación</p><div class="mk-views">'
+      + '<figure><span class="mk-lbl">DELANTERA</span><button type="button" class="mk-zoom" data-mk-zoom="front">'+lupa+'Ampliar</button>'+shirt(sk, "front")+'</figure>'
+      + '<figure><span class="mk-lbl">ESPALDA</span><button type="button" class="mk-zoom" data-mk-zoom="back">'+lupa+'Ampliar</button>'+shirt(sk, "back")+'</figure></div>'
+      + '<ul class="mk-list">'+marcajeLista().map(function(m){ return '<li><b>'+m[0]+'</b>'+m[1]+'</li>'; }).join("")+'</ul>'
+      + '<p class="mk-note">Esquema con vuestro escudo, patrocinador, nombres y dorsales en su sitio y a su tamaño. El diseño de la camiseta es el de la foto; antes de fabricar os mandamos el boceto.</p></div>';
   }
+  // Ampliar el esquema (delantera o espalda) en una ventana
+  var mkSide = "front";
+  function abrirMarcaje(side){
+    mkSide = side;
+    var d = $("mk-dlg");
+    if (!d){
+      d = document.createElement("dialog"); d.className = "mk-dlg"; d.id = "mk-dlg"; d.setAttribute("aria-label", "Esquema de la equipación");
+      d.innerHTML = '<div class="mk-dlg-in"><button type="button" class="m-close" data-mk-close aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>'
+        + '<div id="mk-big"></div><div class="mk-dlg-bar"><button type="button" data-mk-side="front">Delantera</button><button type="button" data-mk-side="back">Espalda</button></div></div>';
+      document.body.appendChild(d);
+      d.addEventListener("click", function(e){
+        if (e.target === d || e.target.closest("[data-mk-close]")) { d.close(); return; }
+        var b = e.target.closest("[data-mk-side]"); if (b){ mkSide = b.dataset.mkSide; pintarGrande(); }
+      });
+    }
+    pintarGrande();
+    if (d.showModal) d.showModal(); else d.setAttribute("open", "");
+  }
+  function pintarGrande(){
+    var h = state.model ? state.model.hex : state.c1;
+    var sk = state.model ? {pattern:"lisa", c1:h, c2:h, c3:h, ink:"auto", outline:"", team:state.team, sponsor:state.sponsor, sponsorPos:state.sponsorPos, crest:state.crest, sponsorLogo:state.sponsorLogo,
+      sponsor2On:state.sponsor2On, sponsor2:state.sponsor2, sponsor2Pos:state.sponsor2Pos, sponsor2Logo:state.sponsor2Logo} : state;
+    $("mk-big").innerHTML = shirt(sk, mkSide);
+    document.querySelectorAll("[data-mk-side]").forEach(function(b){ b.setAttribute("aria-pressed", b.dataset.mkSide === mkSide); });
+  }
+  document.addEventListener("click", function(e){ var z = e.target.closest("[data-mk-zoom]"); if (z) abrirMarcaje(z.dataset.mkZoom); });
   // Lo elegido, arriba del pedido
   function renderPick(){
     var el = $("pick");
