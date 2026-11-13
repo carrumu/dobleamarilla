@@ -2,7 +2,7 @@
 // GET  /api/cliente?t=TOKEN                                      -> estado del pedido, boceto, total y su reseña
 // POST /api/cliente {t, accion:"pagar"}                          -> enlace de pago de Stripe (solo con el boceto enviado)
 // POST /api/cliente {t, accion:"resena", nombre, estrellas, texto} -> guarda su reseña (pedido enviado o entregado)
-import { configurado, db, stripe, json, error, sinConfigurar, leerJson, vistaCliente, codigoDiseno, SITE } from "./_lib/comun.js";
+import { configurado, db, stripe, json, error, sinConfigurar, leerJson, vistaCliente, codigoDiseno, SITE, limitar } from "./_lib/comun.js";
 
 const PUEDE_OPINAR = ["enviado", "entregado"];
 const txt = (v, max) => String(v ?? "").replace(/[\u0000-\u001f]/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
@@ -19,6 +19,7 @@ async function suResena(num) {
 
 export async function GET(req) {
   if (!configurado.db) return sinConfigurar();
+  const l = await limitar(req, "ver-pedido", 60, 15); if (l) return l;
   const p = await buscar(new URL(req.url).searchParams.get("t"));
   if (!p) return error("No encontramos este pedido. Revisa el enlace.", 404);
   const v = await vistaCliente(p);
@@ -89,7 +90,8 @@ export async function POST(req) {
   if (!configurado.db) return sinConfigurar();
   let b;
   try { b = await leerJson(req, 4096); } catch (e) { return error(e.message); }
-  if (b.accion === "buscar") return porCodigo(b);
+  if (b.accion === "buscar") return (await limitar(req, "buscar", 10, 15)) || porCodigo(b);
+  const l = await limitar(req, "cliente", 30, 60); if (l) return l;
   const p = await buscar(b.t);
   if (!p) return error("No encontramos este pedido.", 404);
   if (b.accion === "resena") return resena(p, b);

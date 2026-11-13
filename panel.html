@@ -265,7 +265,8 @@ th{font-size:12px;color:var(--mute)}
     api(Object.assign({accion:"exportar"}, body)).then(function(j){
       if (!j.filas.length){ alert("No hay pedidos pagados pendientes."); return; }
       var cols = Object.keys(j.filas[0]);
-      var q = function(v){ return '"'+String(v == null ? "" : v).replace(/"/g,'""')+'"'; };
+      // Lo que empiece por = + - @ (o tabulador) Excel lo ejecutaría como fórmula: se le pone una comilla delante
+      var q = function(v){ var s = String(v == null ? "" : v); if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; return '"'+s.replace(/"/g,'""')+'"'; };
       var text = "﻿"+[cols.map(q).join(",")].concat(j.filas.map(function(f){ return cols.map(function(c){ return q(f[c]); }).join(","); })).join("\r\n");
       var a = document.createElement("a");
       a.href = URL.createObjectURL(new Blob([text], {type:"text/csv;charset=utf-8"}));

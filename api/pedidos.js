@@ -1,5 +1,5 @@
 // POST /api/pedidos: guarda el pedido que manda la web. Aún no se cobra: primero va el boceto.
-import { BRAND, CATALOGO, configurado, db, json, error, sinConfigurar, leerJson, token, lineas, RUTA_SUBIDA, SITE, MINIMO_MEDIDA, MINIMO_PEDIDO } from "./_lib/comun.js";
+import { BRAND, CATALOGO, configurado, db, json, error, sinConfigurar, leerJson, token, lineas, RUTA_SUBIDA, SITE, MINIMO_MEDIDA, MINIMO_PEDIDO, limitar, limitarTotal } from "./_lib/comun.js";
 import { avisarCliente, avisarTienda } from "./_lib/correo.js";
 
 const PATRONES = ["lisa", "banda", "aros", "rayas", "mitades", "faja", "corte", "laterales", "tarjetas"];
@@ -42,6 +42,8 @@ export async function POST(req) {
   let b;
   try { b = await leerJson(req); } catch (e) { return error(e.message); }
   if (b.web) return json({ ok: true }); // campo trampa: solo lo rellenan los bots
+  // 5 pedidos por hora por conexión y 60 al día en total
+  const l = (await limitar(req, "pedido", 5, 60)) || (await limitarTotal("pedido", 60, 1440)); if (l) return l;
 
   try {
     const c = b.cliente || {};

@@ -2,7 +2,7 @@
 // POST /api/votaciones {accion:"crear", opciones:["m04-5","m12-4"], equipo}      -> {id}
 // GET  /api/votaciones?id=ID&votante=CLAVE                                        -> opciones, recuento, quién ha votado y su voto
 // POST /api/votaciones {accion:"votar", id, opcion, votante, nombre}              -> recuento actualizado
-import { configurado, db, json, error, leerJson, token, CATALOGO } from "./_lib/comun.js";
+import { configurado, db, json, error, leerJson, token, CATALOGO, limitar, limitarTotal } from "./_lib/comun.js";
 
 const txt = (v, max) => String(v ?? "").replace(/[\u0000-\u001f<>]/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
 const ID = /^[A-Za-z0-9_-]{20,40}$/, VOTANTE = /^[A-Za-z0-9_-]{16,40}$/;
@@ -33,6 +33,7 @@ export async function GET(req) {
   if (!configurado.db) return noDisponible();
   const q = new URL(req.url).searchParams, id = q.get("id") || "", votante = q.get("votante") || "";
   if (!ID.test(id)) return error("Enlace de votación no válido.", 404);
+  const l = await limitar(req, "ver-votacion", 120, 15); if (l) return l;
   const r = await estado(id, VOTANTE.test(votante) ? votante : "");
   return r.fallo || json(r.datos);
 }
@@ -43,6 +44,7 @@ export async function POST(req) {
   try { b = await leerJson(req, 4096); } catch (e) { return error(e.message); }
 
   if (b.accion === "crear") {
+    const l = (await limitar(req, "votacion", 10, 60)) || (await limitarTotal("votacion", 300, 1440)); if (l) return l;
     const opciones = [...new Set((Array.isArray(b.opciones) ? b.opciones : []).map(String))].filter(opcionValida).slice(0, 4);
     if (opciones.length < 2) return error("Elige al menos 2 equipaciones para votar.");
     const fila = { id: token(), equipo: txt(b.equipo, 40), opciones };
@@ -52,6 +54,7 @@ export async function POST(req) {
   }
 
   if (b.accion === "votar") {
+    const l = await limitar(req, "voto", 60, 60); if (l) return l;
     const id = String(b.id || ""), votante = String(b.votante || ""), opcion = String(b.opcion || "");
     if (!ID.test(id) || !VOTANTE.test(votante)) return error("Datos no válidos.");
     const r = await estado(id, votante);

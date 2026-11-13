@@ -40,13 +40,49 @@ export function json(data, status = 200) {
 export const error = (msg, status = 400) => json({ error: msg }, status);
 export const sinConfigurar = () => error("La tienda online aún no está activada.", 503);
 
+// Solo se aceptan envíos desde nuestra propia web (o sus vistas previas y local). Frena que otra web
+// mande pedidos, votos o subidas en nombre de quien la visita.
+const ORIGENES = [SITE, "https://www.dobleeamarilla.com", "https://dobleeamarilla.com"];
+export function origenPermitido(req) {
+  const o = req.headers.get("origin");
+  if (!o) return req.headers.get("sec-fetch-site") !== "cross-site";
+  return ORIGENES.includes(o) || /^https:\/\/dobleamarilla[a-z0-9-]*\.vercel\.app$/.test(o) || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(o);
+}
+
 export async function leerJson(req, max = 64 * 1024) {
+  if (!origenPermitido(req)) throw new Error("Origen no permitido.");
+  const largo = Number(req.headers.get("content-length") || 0);
+  if (largo > max) throw new Error("Demasiados datos.");
   const t = await req.text();
   if (t.length > max) throw new Error("Demasiados datos.");
   try { return JSON.parse(t || "{}"); } catch { throw new Error("Datos no válidos."); }
 }
 
 export const token = () => randomBytes(18).toString("base64url");
+
+// Límite de intentos por conexión: como mucho "max" veces cada "minutos". Se guarda una huella cifrada de la IP,
+// nunca la IP. Tabla y función en backend/limites.sql; si aún no existen, no se limita (la web sigue funcionando).
+let avisoLimites = false;
+export async function limitar(req, accion, max, minutos) {
+  if (!configurado.db) return null;
+  const ip = (req.headers.get("x-real-ip") || (req.headers.get("x-forwarded-for") || "").split(",")[0] || "desconocida").trim();
+  const huella = createHmac("sha256", "limite:" + ENV.SUPABASE_SECRET_KEY).update(ip).digest("base64url").slice(0, 22);
+  return contar(accion + ":" + huella, max, minutos);
+}
+// Límite total de una acción, venga de donde venga (por si atacan desde muchas IP a la vez)
+export async function limitarTotal(accion, max, minutos) {
+  if (!configurado.db) return null;
+  return contar(accion + ":total", max, minutos);
+}
+async function contar(clave, max, minutos) {
+  try {
+    const { data, error: e } = await db().rpc("limite_sumar", { p_clave: clave, p_ventana: Math.floor(Date.now() / (minutos * 60000)) });
+    if (e) { if (!avisoLimites) { console.warn("Límites sin activar (backend/limites.sql):", e.message); avisoLimites = true; } return null; }
+    if (data > max) return new Response(JSON.stringify({ error: "Demasiados intentos. Espera unos minutos y vuelve a probar." }),
+      { status: 429, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "retry-after": String(minutos * 60) } });
+  } catch (e) { console.error(e); }
+  return null;
+}
 
 // Archivos: los logos los sube el cliente antes de que exista el pedido, en tmp/
 export const MIMES = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "application/pdf": "pdf" };
@@ -94,17 +130,17 @@ export async function vistaCliente(p) {
   };
 }
 
-// Panel: sesión firmada con la contraseña, caduca a las 12 horas
+// Panel: sesión firmada con la contraseña, caduca a las 8 horas. Cambiar ADMIN_PASSWORD cierra todas las sesiones
 const firmar = (s) => createHmac("sha256", "panel:" + ENV.ADMIN_PASSWORD).update(s).digest("base64url");
 export function crearSesion() {
-  const exp = String(Date.now() + 12 * 3600 * 1000);
+  const exp = String(Date.now() + 8 * 3600 * 1000);
   return exp + "." + firmar(exp);
 }
 export function sesionValida(req) {
   if (!configurado.panel) return false;
   const t = (req.headers.get("authorization") || "").replace(/^Bearer /, "");
   const [exp, sig] = t.split(".");
-  if (!exp || !sig || +exp < Date.now()) return false;
+  if (!/^\d{13}$/.test(exp || "") || !sig || +exp < Date.now() || +exp > Date.now() + 8 * 3600 * 1000) return false;
   const a = Buffer.from(sig), b = Buffer.from(firmar(exp));
   return a.length === b.length && timingSafeEqual(a, b);
 }

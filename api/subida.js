@@ -1,11 +1,13 @@
 // POST /api/subida {mime}: devuelve una URL firmada para subir un logo directamente al almacenamiento
 // (así el archivo no pasa por la función y no choca con su límite de tamaño). El bucket limita peso y tipos.
-import { configurado, db, json, error, sinConfigurar, leerJson, token, MIMES } from "./_lib/comun.js";
+import { configurado, db, json, error, sinConfigurar, leerJson, token, MIMES, limitar, limitarTotal } from "./_lib/comun.js";
 
 export async function POST(req) {
   if (!configurado.db) return sinConfigurar();
   let b;
   try { b = await leerJson(req, 1024); } catch (e) { return error(e.message); }
+  // 20 subidas por hora por conexión y 300 al día en total
+  const l = (await limitar(req, "subida", 20, 60)) || (await limitarTotal("subida", 300, 1440)); if (l) return l;
   const ext = MIMES[b.mime];
   if (!ext) return error("Formato no admitido. Usa PNG, JPG, WebP o PDF.");
   const ruta = "tmp/" + token().slice(0, 24) + "." + ext;

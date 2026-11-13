@@ -1,6 +1,6 @@
 // POST /api/admin {accion, ...}: todo lo del panel (panel.html). Menos la entrada, pide la sesión firmada.
 import { configurado, db, json, error, sinConfigurar, leerJson, crearSesion, sesionValida, claveCorrecta,
-  urlFirmada, codigoDiseno, refsProveedor, token, MIMES, SITE, lineas, BRAND } from "./_lib/comun.js";
+  urlFirmada, codigoDiseno, refsProveedor, token, MIMES, SITE, lineas, BRAND, limitar, limitarTotal } from "./_lib/comun.js";
 import { avisarCliente, correoActivo, correoPrueba } from "./_lib/correo.js";
 
 const ESTADOS = ["nuevo", "boceto", "pagado", "fabricacion", "enviado", "entregado", "cancelado"];
@@ -131,6 +131,9 @@ export async function POST(req) {
   try { b = await leerJson(req); } catch (e) { return error(e.message); }
   const fn = Object.hasOwn(acciones, b.accion) && acciones[b.accion];
   if (!fn) return error("Acción desconocida.");
+  // Entrada: 5 intentos cada 15 minutos por conexión y 40 por hora en total
+  if (b.accion === "entrar") { const l = (await limitar(req, "entrar", 5, 15)) || (await limitarTotal("entrar", 40, 60)); if (l) return l; }
   if (b.accion !== "entrar" && !sesionValida(req)) return error("Sesión caducada. Vuelve a entrar.", 401);
+  if (b.codigo !== undefined && !/^P\d{4,6}$/.test(String(b.codigo))) return error("Pedido no válido.");
   try { return await fn(b); } catch (e) { console.error(e); return error("Error del servidor. Inténtalo otra vez.", 500); }
 }
