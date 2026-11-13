@@ -27,3 +27,17 @@ details p{margin:8px 0 0}
 @media(max-width:480px){th,td{padding:10px 6px;font-size:14px}}
 .tbl-wrap table{min-width:720px}
 .tbl-wrap th,.tbl-wrap td{white-space:nowrap}
+/* Migas, fichas de modelo y guías (2026-11-13) */
+.migas{font-size:14px;color:var(--mute);margin:0 0 8px}
+.migas a{color:inherit}
+.migas span{color:var(--fg)}
+figcaption a{color:inherit}
+.modelo h2 a{color:inherit;text-decoration:none}
+.modelo h2 a:hover{text-decoration:underline}
+.modelo .diseno{margin:-4px 0 12px;color:var(--mute)}
+.modelo .diseno::first-letter{text-transform:uppercase}
+figure.puesta{max-width:440px;margin:0 0 24px}
+figure.puesta figcaption{font-weight:500;font-size:13px;color:var(--mute)}
+.nombres{display:grid;grid-template-columns:1fr;gap:6px 18px;padding-left:20px;margin:0 0 20px}
+@media(min-width:640px){.nombres{grid-template-columns:1fr 1fr}}
+.nombres li{margin:0}
