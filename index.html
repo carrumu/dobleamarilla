@@ -139,6 +139,41 @@ footer .logo img{height:34px}
 /* Productos */
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 @media(min-width:900px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}}
+@media(min-width:1200px){.grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}}
+/* Franja de garantías y tres formas de pedir */
+.gar-sec{padding:20px 0 0}
+@media(min-width:900px){.gar-sec{padding:28px 0 0}}
+.gar{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:14px 20px}
+@media(min-width:900px){.gar{grid-template-columns:repeat(4,1fr);gap:28px}}
+.gar li::before{content:"";display:block;width:28px;height:4px;border-radius:2px;background:var(--amarillo);margin-bottom:10px}
+.gar b{display:block;font-size:15px;line-height:1.25}
+.gar span{display:block;margin-top:3px;font-size:13.5px;line-height:1.35;color:var(--mute)}
+@media(min-width:900px){.gar b{font-size:16px}.gar span{font-size:14px}}
+.formas{display:grid;gap:10px;margin-top:22px}
+@media(min-width:900px){.formas{grid-template-columns:repeat(3,1fr);gap:18px;margin-top:32px}}
+.forma{display:flex;flex-direction:column;gap:4px;padding:16px 18px;border:1px solid var(--line);border-radius:var(--r);background:#fff;text-decoration:none;box-shadow:var(--shadow);transition:border-color .15s ease,transform .15s ease}
+.forma:hover{border-color:var(--fg);transform:translateY(-2px)}
+.forma .f-eye{font:600 12px/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.forma b{font-size:20px;line-height:1.2;margin-top:4px}
+.forma > span:not(.f-eye){font-size:14.5px;color:#3d3d3a;line-height:1.4}
+.forma i{font-style:normal;font-weight:700;font-size:14.5px;margin-top:8px}
+@media(min-width:900px){.forma{padding:22px 24px}.forma b{font-size:22px}}
+/* Votación en grupo */
+.votar-sec{padding-top:0}
+.votar-band{display:grid;gap:24px;background:var(--card);border-radius:var(--r);padding:26px 20px}
+@media(min-width:900px){.votar-band{grid-template-columns:1.1fr 1fr;gap:48px;align-items:center;padding:48px 56px}}
+.vb-text h2{margin:0 0 10px;font-weight:700;font-size:clamp(26px,3.2vw,36px);line-height:1.15;letter-spacing:-.01em}
+.vb-text p{margin:0 0 20px;color:#3d3d3a;max-width:520px}
+.vb-text .ctas{display:flex;flex-wrap:wrap;gap:10px}
+.vb-demo{background:#fff;border-radius:14px;padding:16px;box-shadow:var(--shadow);display:grid;gap:12px}
+.vb-row{display:grid;grid-template-columns:84px 1fr;gap:12px;align-items:center}
+.vb-row img{width:84px;height:63px;object-fit:contain;border:1px solid var(--line);border-radius:8px;background:#fff}
+.vb-row b{display:flex;align-items:center;gap:8px;font-size:15px}
+.vb-row em{font-style:normal;font-size:11.5px;font-weight:700;background:var(--amarillo);border-radius:999px;padding:2px 8px}
+.vb-bar{display:block;height:8px;border-radius:999px;background:var(--panel);overflow:hidden;margin:6px 0 4px}
+.vb-bar i{display:block;height:100%;background:var(--negro);border-radius:999px;transform-origin:left}
+.vb-row small{font-size:12.5px;color:var(--mute)}
+.vb-note{margin:0;font-size:12px;color:var(--mute);text-align:right}
 .card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:10px;box-shadow:var(--shadow)}
 .card .ph{position:relative;aspect-ratio:8/9;border-radius:10px;overflow:hidden;background:var(--card)}
 .card .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .25s ease}
@@ -567,6 +602,22 @@ footer ul a:hover{color:#fff;text-decoration:underline}
     </div>
   </section>
 
+  <section class="gar-sec" aria-label="Lo que tenéis seguro">
+    <div class="wrap">
+      <ul class="gar">
+        <li><b>Boceto antes de pagar</b><span>No se fabrica nada hasta que lo aprobáis.</span></li>
+        <li><b>Todo incluido</b><span>Escudo, patrocinadores, nombre y dorsal.</span></li>
+        <li><b>Menos de 20 días laborables</b><span>Desde que aprobáis la propuesta.</span></li>
+        <li><b>Hablas con una persona</b><span>Te contesto yo por WhatsApp.</span></li>
+      </ul>
+      <div class="formas">
+        <a class="forma" href="#camisetas"><span class="f-eye">Lo más rápido</span><b>Del catálogo</b><span>Modelos ya diseñados, en varios colores. Elegís y les ponemos lo vuestro.</span><i>Ver equipaciones ›</i></a>
+        <a class="forma" href="#colores"><span class="f-eye">Si ya tenéis colores</span><b>Por vuestros colores</b><span>Marcad los colores del equipo y os enseñamos las que los llevan.</span><i>Buscar por colores ›</i></a>
+        <a class="forma" href="hacer-pedido.html#disena"><span class="f-eye">Única</span><b>A medida</b><span>La diseñamos desde cero con vuestra idea. Desde 10 camisetas.</span><i>Empezar el diseño ›</i></a>
+      </div>
+    </div>
+  </section>
+
   <section id="camisetas">
     <div class="wrap">
       <div class="sec-head">
@@ -612,6 +663,25 @@ footer ul a:hover{color:#fff;text-decoration:underline}
       <div class="medida-cta">
         <p><b>¿No encontráis vuestros colores?</b> La diseñamos a medida, con vuestra idea y vuestros colores.</p>
         <a class="btn btn-o" href="#a-medida">Diseño a medida</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="votar" class="votar-sec">
+    <div class="wrap">
+      <div class="votar-band">
+        <div class="vb-text">
+          <span class="eyebrow">Para el grupo de WhatsApp</span>
+          <h2>¿No os ponéis de acuerdo? Votadla</h2>
+          <p>Elegid entre 2 y 4 equipaciones, mandad el enlace al grupo y que vote cada uno. Sin registrarse y con el recuento al momento. Desde la ganadora se pasa directo al pedido.</p>
+          <div class="ctas"><a class="btn btn-k" href="votar.html">Crear una votación</a></div>
+        </div>
+        <div class="vb-demo" aria-hidden="true">
+          <div class="vb-row"><img src="img/catalogo/m12-4.webp" alt="" width="960" height="720" loading="lazy"><div><b>DA12-4 <em>Va ganando</em></b><span class="vb-bar"><i style="transform:scaleX(.58)"></i></span><small>7 votos · 58 %</small></div></div>
+          <div class="vb-row"><img src="img/catalogo/m04-5.webp" alt="" width="960" height="720" loading="lazy"><div><b>DA04-5</b><span class="vb-bar"><i style="transform:scaleX(.33)"></i></span><small>4 votos · 33 %</small></div></div>
+          <div class="vb-row"><img src="img/catalogo/m13-5.webp" alt="" width="960" height="720" loading="lazy"><div><b>DA13-5</b><span class="vb-bar"><i style="transform:scaleX(.09)"></i></span><small>1 voto · 9 %</small></div></div>
+          <p class="vb-note">Ejemplo de votación</p>
+        </div>
       </div>
     </div>
   </section>
