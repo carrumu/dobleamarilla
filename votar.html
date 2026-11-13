@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Votad la equipación del equipo · Doble Amarilla</title>
+<meta name="description" content="Elegid entre 2 y 4 equipaciones, mandad el enlace al grupo y que vote cada uno. Gana la que más votos tenga.">
+<meta name="robots" content="noindex">
+<meta property="og:title" content="¿Con qué equipación salimos? Vota aquí">
+<meta property="og:description" content="Votación de la equipación del equipo en Doble Amarilla. Un voto por persona.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Doble Amarilla">
+<meta property="og:locale" content="es_ES">
+<meta property="og:image" content="https://www.dobleeamarilla.com/og-image.png">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lib/legal.css">
+<link rel="stylesheet" href="lib/guia.css">
+<script src="lib/catalogo.js"></script>
+<style>
+.wrap.ancho{max-width:1040px}
+.paso{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:0 0 6px}
+.sel{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;min-height:44px;align-items:center}
+.sel .vacio{color:var(--mute);font-size:15px}
+.sel button{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 12px 0 4px;border:1.5px solid var(--negro);border-radius:999px;background:#fff;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.sel button img{width:32px;height:32px;object-fit:cover;border-radius:50%;background:var(--card)}
+.sel button span{color:var(--mute);font-weight:500}
+.modelos{display:grid;gap:18px;margin:0 0 24px}
+.mod h3{margin:0 0 8px;font-size:16px}
+.mod h3 a{color:inherit}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media(min-width:640px){.cols{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(min-width:900px){.cols{grid-template-columns:repeat(7,minmax(0,1fr))}}
+.op{position:relative;display:block;padding:0;border:1.5px solid var(--line);border-radius:10px;background:#fff;overflow:hidden;cursor:pointer;font:inherit;text-align:left}
+.op img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:contain;background:#fff}
+.op b{display:block;padding:4px 8px;font-size:13px;border-top:1px solid var(--line)}
+.op[aria-pressed="true"]{border-color:var(--negro);box-shadow:0 0 0 2px var(--negro)}
+.op[aria-pressed="true"] b{background:var(--negro);color:#fff}
+.op:disabled{opacity:.4;cursor:not-allowed}
+label.campo{display:block;font-weight:600;font-size:15px;margin:0 0 6px}
+input.txt{width:100%;max-width:420px;min-height:48px;padding:0 14px;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-size:16px}
+input.txt:focus{outline:none;border-color:var(--negro)}
+.barra-fija{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);padding:12px 0;margin-top:12px;z-index:5}
+.barra-fija .ctas{margin:0}
+.btn[disabled]{opacity:.45;pointer-events:none}
+button.btn{font:inherit;font-weight:700;cursor:pointer}
+.aviso{background:#fff8d6;border-radius:12px;padding:14px 16px;margin:0 0 18px;font-size:15px}
+.ok{background:var(--card);border-radius:14px;padding:18px;margin:0 0 20px}
+.enlace{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0 0}
+.enlace code{flex:1 1 260px;min-width:0;overflow-wrap:anywhere;background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:14px}
+/* Votación */
+.cand{display:grid;gap:14px;margin:0 0 20px}
+@media(min-width:640px){.cand{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.c{border:1.5px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+.c.mia{border-color:var(--negro);box-shadow:0 0 0 2px var(--negro)}
+.c.gana .titulo::after{content:"Va ganando";margin-left:auto;font-size:12px;font-weight:700;background:var(--amarillo);border-radius:999px;padding:3px 9px}
+.c img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:contain;background:#fff}
+.c .cuerpo{padding:12px 14px 14px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px;flex:1}
+.c .titulo{display:flex;align-items:center;gap:8px;font-weight:700}
+.c .titulo a{color:inherit}
+.bar{height:10px;border-radius:999px;background:var(--card);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--negro);border-radius:999px;transition:width .3s ease}
+.c .cuenta{font-size:14px;color:var(--mute)}
+.c .btn{width:100%;margin-top:auto}
+.quien{font-size:13px;color:var(--mute)}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="brand" href="./"><img src="img/logo.svg" alt="Doble Amarilla" width="164" height="28"></a><a class="back" href="./#camisetas">Ver equipaciones</a></div></header>
+<main><div class="wrap ancho" id="app">
+<noscript><p>Para votar hace falta tener JavaScript activado.</p></noscript>
+</div></main>
+<footer><div class="wrap"><a href="./">Inicio</a><a href="catalogo.html">Catálogo</a><a href="como-elegir-equipacion-de-futbol.html">Cómo elegir la equipación</a><a href="nombres-para-equipos-de-futbol.html">Nombres para equipos de fútbol</a><a href="condiciones.html">Condiciones de compra</a></div></footer>
+<script>
+(function(){
+  var CAT = window.__CATALOGO__ || [], app = document.getElementById("app"), SITE = location.origin + location.pathname.replace(/[^/]*$/, "");
+  var q = new URLSearchParams(location.search);
+  function esc(s){ return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+  function info(code){ // "m04-5" -> {m, i, nombre, img, ficha}
+    var r = /^(m\d\d)-(\d{1,2})$/.exec(code || ""); if (!r) return null;
+    var m = CAT.filter(function(x){ return x.id === r[1]; })[0]; if (!m) return null;
+    var i = +r[2] - 1; if (!m.colors[i]) return null;
+    return {m:m, i:i, nombre:m.name+"-"+(i+1), img:m.colors[i].img, ficha:"equipacion-futbol-"+m.name.toLowerCase()+".html", pedir:"hacer-pedido.html?m="+m.id+"&c="+(i+1)};
+  }
+  function guardar(k, v){ try { localStorage.setItem(k, v); } catch(e) {} }
+  function leer(k){ try { return localStorage.getItem(k) || ""; } catch(e) { return ""; } }
+  function votante(){
+    var v = leer("da-votante");
+    if (!/^[A-Za-z0-9_-]{16,40}$/.test(v)){
+      var a = new Uint8Array(18); (window.crypto || window.msCrypto).getRandomValues(a);
+      v = btoa(String.fromCharCode.apply(null, a)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+      guardar("da-votante", v);
+    }
+    return v;
+  }
+  function api(metodo, datos, query){
+    return fetch("api/votaciones" + (query || ""), metodo === "GET" ? {} : {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify(datos)})
+      .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ if (!r.ok) throw new Error(j.error || "No se ha podido conectar. Inténtalo otra vez."); return j; }); });
+  }
+  function waLink(texto){ return "https://wa.me/?text=" + encodeURIComponent(texto); }
+
+  // ---------- Crear la votación ----------
+  function crear(){
+    var elegidas = (q.get("o") || "").split(",").filter(function(c){ return info(c); }).slice(0, 4), error = "";
+    function pintar(){
+      app.innerHTML =
+        '<h1>Votad la equipación en el grupo</h1>'
+        + '<p class="lead">Elegid entre 2 y 4 equipaciones, mandad el enlace al grupo de WhatsApp y que vote cada uno. Un voto por persona, y se puede cambiar.</p>'
+        + (error ? '<p class="aviso">'+esc(error)+'</p>' : '')
+        + '<p class="paso">1 · Las candidatas ('+elegidas.length+' de 4)</p>'
+        + '<div class="sel">' + (elegidas.length ? elegidas.map(function(c){ var x = info(c); return '<button type="button" data-quitar="'+c+'" aria-label="Quitar '+x.nombre+'"><img src="'+x.img+'" alt="">'+x.nombre+' <span>Quitar</span></button>'; }).join("") : '<span class="vacio">Todavía ninguna. Tocad abajo las que os gusten.</span>') + '</div>'
+        + '<p class="paso">2 · Nombre del equipo (opcional)</p>'
+        + '<p><label class="campo" for="equipo">Sale arriba de la votación</label><input class="txt" id="equipo" maxlength="40" placeholder="Por ejemplo, Atlético Resaca" value="'+esc(leer("da-equipo"))+'"></p>'
+        + '<p class="paso">3 · Elegid las candidatas</p>'
+        + '<div class="modelos">' + CAT.map(function(m){
+            return '<div class="mod"><h3><a href="equipacion-futbol-'+m.name.toLowerCase()+'.html">'+m.name+'</a></h3><div class="cols">' + m.colors.map(function(c, i){
+              var code = m.id+"-"+(i+1), on = elegidas.indexOf(code) >= 0;
+              return '<button type="button" class="op" data-op="'+code+'" aria-pressed="'+on+'"'+(!on && elegidas.length >= 4 ? ' disabled' : '')+'><img src="'+c.img+'" alt="'+m.name+'-'+(i+1)+'" loading="lazy" width="960" height="720"><b>'+m.name+'-'+(i+1)+'</b></button>';
+            }).join("") + '</div></div>';
+          }).join("") + '</div>'
+        + '<div class="barra-fija"><p class="ctas"><button type="button" class="btn" id="crear"'+(elegidas.length < 2 ? ' disabled' : '')+'>Crear la votación</button>'
+        + '<span style="align-self:center;color:var(--mute);font-size:15px">'+(elegidas.length < 2 ? 'Elegid al menos 2' : elegidas.length+' elegidas')+'</span></p></div>';
+    }
+    app.addEventListener("click", function(e){
+      var b = e.target.closest("[data-op],[data-quitar]");
+      if (b){
+        var c = b.dataset.op || b.dataset.quitar, k = elegidas.indexOf(c);
+        if (k >= 0) elegidas.splice(k, 1); else if (elegidas.length < 4) elegidas.push(c);
+        var y = window.scrollY; error = ""; pintar(); window.scrollTo(0, y); return;
+      }
+      if (e.target.closest("#crear")){
+        var eq = document.getElementById("equipo").value.trim(); guardar("da-equipo", eq);
+        var btn = document.getElementById("crear"); btn.disabled = true; btn.textContent = "Creando…";
+        api("POST", {accion:"crear", opciones:elegidas, equipo:eq}).then(function(r){
+          location.href = "votar.html?v=" + encodeURIComponent(r.id) + "&nueva=1";
+        }).catch(function(err){
+          // Sin votaciones activadas: se puede seguir mandando las candidatas por WhatsApp
+          var texto = "¿Con cuál salimos" + (eq ? " (" + eq + ")" : "") + "? Votad en el grupo:\n" + elegidas.map(function(c, n){ var x = info(c); return (n+1) + ". " + x.nombre + ": " + SITE + x.ficha; }).join("\n");
+          error = err.message; pintar();
+          app.querySelector(".aviso").insertAdjacentHTML("beforeend", ' <a href="'+waLink(texto)+'" target="_blank" rel="noopener">Mandar las candidatas al grupo por WhatsApp</a>.');
+          window.scrollTo(0, 0);
+        });
+      }
+    });
+    pintar();
+  }
+
+  // ---------- Votar ----------
+  function votar(id){
+    var yo = votante(), datos = null, error = "", nueva = q.get("nueva") === "1";
+    var enlace = SITE + "votar.html?v=" + encodeURIComponent(id);
+    function textoWa(){ return "¿Con qué equipación salimos" + (datos && datos.equipo ? ", " + datos.equipo : "") + "? Vota aquí (un voto por persona): " + enlace; }
+    function pintar(){
+      if (!datos){ app.innerHTML = error ? '<h1>Votación</h1><p class="aviso">'+esc(error)+'</p><p><a class="btn" href="votar.html">Crear una votación nueva</a></p>' : '<p>Cargando la votación…</p>'; return; }
+      var max = 0; datos.opciones.forEach(function(o){ max = Math.max(max, datos.recuento[o].votos); });
+      app.innerHTML =
+        '<h1>' + (datos.equipo ? esc(datos.equipo) + ': ' : '') + '¿con cuál salimos?</h1>'
+        + '<p class="lead">' + (datos.total ? datos.total + (datos.total === 1 ? ' voto' : ' votos') + ' hasta ahora.' : 'Todavía no ha votado nadie.') + ' Un voto por persona; si cambias de idea, vota otra.</p>'
+        + (nueva ? '<div class="ok"><b>Votación creada.</b> Mandad este enlace al grupo del equipo:<div class="enlace"><code>'+esc(enlace)+'</code><a class="btn" href="'+waLink(textoWa())+'" target="_blank" rel="noopener">Mandar al grupo</a><button type="button" class="btn o" id="copiar">Copiar enlace</button></div></div>' : '')
+        + (error ? '<p class="aviso">'+esc(error)+'</p>' : '')
+        + '<p><label class="campo" for="nombre">Tu nombre (opcional, para que el resto sepa quién ha votado)</label><input class="txt" id="nombre" maxlength="30" value="'+esc(datos.mi_nombre || leer("da-nombre"))+'"></p>'
+        + '<div class="cand">' + datos.opciones.map(function(o){
+            var x = info(o), r = datos.recuento[o], pct = datos.total ? Math.round(r.votos * 100 / datos.total) : 0;
+            if (!x) return "";
+            var cls = "c" + (datos.mi_voto === o ? " mia" : "") + (r.votos && r.votos === max ? " gana" : "");
+            return '<div class="'+cls+'"><img src="'+x.img+'" alt="Equipación '+x.nombre+'" width="960" height="720"><div class="cuerpo">'
+              + '<div class="titulo"><a href="'+x.ficha+'">'+x.nombre+'</a></div>'
+              + '<div class="bar" aria-hidden="true"><i style="width:'+pct+'%"></i></div>'
+              + '<div class="cuenta">'+r.votos+(r.votos === 1 ? ' voto' : ' votos')+' · '+pct+' %</div>'
+              + (r.nombres.length ? '<div class="quien">'+r.nombres.map(esc).join(", ")+'</div>' : '')
+              + '<button type="button" class="btn'+(datos.mi_voto === o ? '' : ' o')+'" data-votar="'+o+'">'+(datos.mi_voto === o ? 'Tu voto' : 'Votar esta')+'</button>'
+              + '</div></div>';
+          }).join("") + '</div>'
+        + '<p class="ctas"><a class="btn o" href="'+waLink(textoWa())+'" target="_blank" rel="noopener">Mandar al grupo</a> <button type="button" class="btn o" id="refrescar">Ver votos nuevos</button></p>'
+        + (max ? '<h2>¿Ya está decidido?</h2><p>Haced el pedido con la ganadora. Os mandamos el boceto con vuestro escudo antes de pagar.</p><p class="ctas">'
+            + datos.opciones.filter(function(o){ return datos.recuento[o].votos === max; }).map(function(o){ var x = info(o); return '<a class="btn" href="'+x.pedir+'">Pedir la '+x.nombre+'</a>'; }).join(" ") + '</p>' : '');
+    }
+    function cargar(){
+      return api("GET", null, "?id=" + encodeURIComponent(id) + "&votante=" + encodeURIComponent(yo))
+        .then(function(r){ datos = r; error = ""; pintar(); })
+        .catch(function(err){ error = err.message; pintar(); });
+    }
+    app.addEventListener("click", function(e){
+      var b = e.target.closest("[data-votar]");
+      if (b){
+        var nombre = document.getElementById("nombre").value.trim(); guardar("da-nombre", nombre);
+        b.disabled = true; b.textContent = "Guardando…";
+        api("POST", {accion:"votar", id:id, opcion:b.dataset.votar, votante:yo, nombre:nombre})
+          .then(function(r){ datos = r; error = ""; pintar(); })
+          .catch(function(err){ error = err.message; pintar(); });
+        return;
+      }
+      if (e.target.closest("#refrescar")) { cargar(); return; }
+      if (e.target.closest("#copiar")){
+        var c = e.target.closest("#copiar");
+        (navigator.clipboard ? navigator.clipboard.writeText(enlace) : Promise.reject()).then(function(){ c.textContent = "Copiado"; }, function(){ c.textContent = "Copia el enlace de arriba"; });
+      }
+    });
+    pintar(); cargar();
+    setInterval(function(){ if (!document.hidden && !document.activeElement.matches("input")) cargar(); }, 20000);
+  }
+
+  var v = q.get("v");
+  if (v) votar(v); else crear();
+})();
+</script>
+</body>
+</html>
