@@ -49,3 +49,5 @@ figure.puesta figcaption{font-weight:500;font-size:13px;color:var(--mute)}
   .barra-movil .btn{min-height:46px;padding:0 10px;font-size:15px}
   .barra-movil ~ footer{padding-bottom:96px}
 }
+.precio{font-size:18px;margin:0 0 4px}
+.precio b{font-weight:800}

@@ -19,12 +19,5 @@
         }
       ]
     }
-  ],
-  "redirects": [
-    {
-      "source": "/cuanto-cuesta-equipacion-equipo(.html)?",
-      "destination": "/",
-      "permanent": true
-    }
   ]
 }
