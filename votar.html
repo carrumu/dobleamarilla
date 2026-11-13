@@ -63,7 +63,7 @@ button.btn{font:inherit;font-weight:700;cursor:pointer}
 .c .titulo{display:flex;align-items:center;gap:8px;font-weight:700}
 .c .titulo a{color:inherit}
 .bar{height:10px;border-radius:999px;background:var(--card);overflow:hidden}
-.bar i{display:block;height:100%;background:var(--negro);border-radius:999px;transition:width .3s ease}
+.bar i{display:block;height:100%;width:100%;background:var(--negro);border-radius:999px;transform-origin:left;transition:transform .3s ease}
 .c .cuenta{font-size:14px;color:var(--mute)}
 .c .btn{width:100%;margin-top:auto}
 .quien{font-size:13px;color:var(--mute)}
@@ -169,7 +169,7 @@ button.btn{font:inherit;font-weight:700;cursor:pointer}
             var cls = "c" + (datos.mi_voto === o ? " mia" : "") + (r.votos && r.votos === max ? " gana" : "");
             return '<div class="'+cls+'"><img src="'+x.img+'" alt="Equipación '+x.nombre+'" width="960" height="720"><div class="cuerpo">'
               + '<div class="titulo"><a href="'+x.ficha+'">'+x.nombre+'</a></div>'
-              + '<div class="bar" aria-hidden="true"><i style="width:'+pct+'%"></i></div>'
+              + '<div class="bar" aria-hidden="true"><i style="transform:scaleX('+(pct/100)+')"></i></div>'
               + '<div class="cuenta">'+r.votos+(r.votos === 1 ? ' voto' : ' votos')+' · '+pct+' %</div>'
               + (r.nombres.length ? '<div class="quien">'+r.nombres.map(esc).join(", ")+'</div>' : '')
               + '<button type="button" class="btn'+(datos.mi_voto === o ? '' : ' o')+'" data-votar="'+o+'">'+(datos.mi_voto === o ? 'Tu voto' : 'Votar esta')+'</button>'
